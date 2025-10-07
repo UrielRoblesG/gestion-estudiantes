@@ -1,0 +1,16 @@
+[
+  {
+    "id": 1759800971147,
+    "nombre": "Uriel Robles",
+    "edad": 26,
+    "carrera": "Ingeniería en Sistemas",
+    "fechaRegistro": "2025-10-07T01:36:11.147Z"
+  },
+  {
+    "id": 1759801018882,
+    "nombre": "Usuario 2",
+    "edad": 22,
+    "carrera": "Ingeniería en Software",
+    "fechaRegistro": "2025-10-07T01:36:58.882Z"
+  }
+]
