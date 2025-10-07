@@ -14,7 +14,8 @@ export const crearAlumno = async (req = request, res = response) => {
     // Llama al servicio para guardar el alumno
     const alumno = await alumnoService.guardarAlumno(req.body);
 
-    res.json({ msg: "Operacion exitosa", data: alumno });
+    res.status(201).json({ msg: "Alumno creado correctamente", data: alumno });
+    
   } catch (error) {
     // Manejo de errores
     res.status(500).json({
