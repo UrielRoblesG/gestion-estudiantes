@@ -12,5 +12,26 @@
     "edad": 22,
     "carrera": "Ingeniería en Software",
     "fechaRegistro": "2025-10-07T01:36:58.882Z"
+  },
+  {
+    "id": 1759971186190,
+    "nombre": "Usuario 3",
+    "edad": 21,
+    "carrera": "Ingeniería en Electrica",
+    "fechaRegistro": "2025-10-09T00:53:06.190Z"
+  },
+  {
+    "id": 1759971432430,
+    "nombre": "Usuario 3",
+    "edad": 21,
+    "carrera": "Ingeniería en Electrica",
+    "fechaRegistro": "2025-10-09T00:57:12.430Z"
+  },
+  {
+    "id": 1759973544661,
+    "nombre": "Luis Mendoza",
+    "edad": 24,
+    "carrera": "Ingeniería Mecánica",
+    "fechaRegistro": "2025-10-09T01:32:24.661Z"
   }
 ]
