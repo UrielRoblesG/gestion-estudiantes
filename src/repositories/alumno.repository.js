@@ -1,6 +1,7 @@
 import path from "path";
 import fs from "node:fs";
 import { readFile, writeFile } from "node:fs/promises";
+import { Estudiante } from "../Models/Estudiante.js";
 
 const dataPath = path.resolve("./src/data/alumnos.json");
 
@@ -16,31 +17,19 @@ class AlumnoRepository {
    * @param {Object} alumno - Objeto con los datos del alumno.
    * @returns {Promise<Object>} Promesa que resuelve con el alumno guardado.
    */
-  guardarAlumno(alumno) {
-    return new Promise((resolve, reject) => {
-      // Error distinto a "archivo no encontrado"
-      fs.readFile(dataPath, (err, data) => {
-        if (err && err.code !== "ENOENT") {
-          return reject(err);
-        }
+  async guardarAlumno(alumno) {
+    try {
+      const data = await readFile(dataPath, 'utf-8');
+      const alumnos = JSON.parse(data || '[]');
+      // Agregamos el nuevo alumno al arreglo
+      alumnos.push(alumno);
 
-        // Si existe el archivo, lo parseamos; si no, inicializamos un arreglo vacío
-        let alumnos = [];
-        if (data) {
-          alumnos = JSON.parse(data);
-        }
+      await writeFile(dataPath, JSON.stringify(alumnos,null, 2));
 
-        // Agregamos el nuevo alumno al arreglo
-        alumnos.push(alumno);
-
-        // Sobrescribimos el archivo con los nuevos datos
-        fs.writeFile(dataPath, JSON.stringify(alumnos, null, 2), (err) => {
-          if (err) return reject(err);
-
-          resolve(alumno);
-        });
-      });
-    });
+      return alumno;
+    } catch(error) {
+      throw error;
+    } 
   }
 
   /**
@@ -80,9 +69,9 @@ class AlumnoRepository {
       // Leer archivo y parsear los datos
       const data = await readFile(dataPath, "utf-8");
       const alumnos = JSON.parse(data || "[]");
-      
+
       // Buscar alumno por ID
-      const index = alumnos.findIndex((a) => a.id === id);
+      const index = alumnos.findIndex((a) => a.id == id);
 
       // Retornar alumno encontrado o null si no existe
       const alumno = index >= 0 ? alumnos[index] : null;
@@ -95,8 +84,58 @@ class AlumnoRepository {
     }
   }
 
-  
-}
+  async eliminarAlumno(index) {
+    try {
+      const data = await readFile(dataPath, "utf-8");
 
+      const alumnos = JSON.parse(data || "[]");
+
+      alumnos.splice(index, 1);
+
+      await writeFile(dataPath, JSON.stringify(alumnos, null, 2));
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  /**
+   * Busca un alumno por email.
+   * @param {string} email - El email a buscar.
+   * @returns {Alumno | undefined} El alumno encontrado o undefined.
+   */
+  async buscarPorEmail(email = '') {
+    try {
+      // Leer archivo y parsear los datos
+      const data = await readFile(dataPath, "utf-8");
+      const alumnos = JSON.parse(data || "[]");
+
+      const alumno = alumnos.find(e => e.email === email.toLowerCase());
+
+      return alumno;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+ /**
+   * Actualiza un alumno.
+   * @param {string} id - El id del alumno a actualizar.
+   * @param {Estudiante} alumnoActualizado - El nuevo objeto Estudiante con la info actualizada.
+   * @returns {undefined} undefined.
+   */
+  async actualizarAlumno(index = 0, alumnoActualizado = new Estudiante()) {
+    try {
+      const data = await readFile(dataPath, 'utf-8');
+
+      const alumnos = JSON.parse(data, '[]');
+
+      alumnos[index] = alumnoActualizado;
+
+      await writeFile(dataPath, JSON.stringify(alumnos, null, 2));
+    } catch (error) {
+      throw error;
+    }
+  }
+}
 
 export default new AlumnoRepository();
