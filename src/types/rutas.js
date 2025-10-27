@@ -3,6 +3,18 @@
  * de las vistas del front-end, utilizando la ruta raíz del proyecto como base.
  */
 
+
+
+
+//* Obtenemos la ruta del archivo actual ruta.js
+const __filename = fileURLToPath(import.meta.url);
+
+//* Obtenemos la ruta de la carpeta donde se encuentra el archivo /types/
+const __dirname = path.dirname(__filename);
+
+//* Subimos dos niveles de la carpeta actual para llegar a la carpeta raiz del proyecto.
+const rutaRaizProyecto = path.resolve(__dirname, '../..');
+
 /**
  * @constant
  * @type {Readonly<{Auth: Readonly<{[key: string]: string}>}>}
@@ -20,5 +32,12 @@ export const Routas = Object.freeze({
     Auth : {
         '/login' : `${rutaRaizProyecto}/front-end/views/login.html`,
         '/registro' : `${rutaRaizProyecto}/front-end/views/registro.html`
+    },
+    Coordinador : {
+        '/coordinador/home' : ``,
+        '/coordinador/alumno' : `` 
+    },
+    Admin : {
+        
     },
 });
