@@ -5,6 +5,12 @@ Proyecto en **Node.js** que implementa una pequeña API REST para la gestión de
 El sistema sigue una arquitectura basada en capas (**Controller → Service → Repository**) y utiliza **Express.js** para manejar las rutas y peticiones HTTP.
 
 ---
+## 📖 Repositorio
+  ```bash 
+  git clone https://github.com/UrielRoblesG/gestion-estudiantes.git
+  ```
+
+---
 
 ## 🚀 Características principales
 
