@@ -6,6 +6,10 @@ import { Router } from "express";
 
 import { iniciarSesion, registro } from "../controllers/auth.controller.js";
 
+import { registroSchema } from "../schemas/registro.schema.js";
+
+import { handleSchemaErrors } from "../middlewares/handle.schema.errors.js";
+
 const route = Router();
 
 /**
@@ -41,6 +45,6 @@ route.post('/login', iniciarSesion);
  * @returns {object} 201 - Usuario creado exitosamente.
  * @returns {object} 400 - Error de validación o correo ya existente.
  */
-route.post('/registro', registro);
+route.post('/registro', [registroSchema, handleSchemaErrors] ,registro);
 
 export default route;

@@ -1,5 +1,27 @@
 import { request, response } from "express";
 
+
+
+/**
+ * Middleware para validar el rol de un usuario antes de permitir el acceso a una ruta.
+ * 
+ * Este middleware revisa el header `tipo-usuario` de la solicitud y compara
+ * el valor contra un arreglo de roles permitidos. Si el rol está permitido,
+ * la solicitud continúa; de lo contrario, se devuelve un error HTTP 403.
+ * 
+ * También registra en consola los intentos de acceso, indicando:
+ * - Tipo de usuario
+ * - Método HTTP
+ * - Ruta solicitada
+ * - Fecha y hora UTC
+ * 
+ * @param {string[]} rolesPermitidos - Array de roles válidos para acceder a la ruta.
+ * @returns {import('express').RequestHandler} Middleware de Express.
+ * 
+ * @example
+ * // Permitir solo administradores y coordinadores:
+ * router.post('/api/alumnos', validarRol([Roles.ADMIN, Roles.COORDINADOR]), crearAlumno);
+ */
 export const validarRol = (rolesPermitidos = []) => {
   return (req = request, res = response, next) => {
 

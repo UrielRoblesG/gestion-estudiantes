@@ -190,6 +190,42 @@ class AlumnoService {
     }
     return errores;
   }
+
+  /**
+   * @function actualizarFotoPerfil
+   * @description Actualiza la foto de perfil de un alumno.
+   * Mueve el archivo cargado desde la carpeta temporal `uploads/`
+   * a una ruta permanente con el nombre del alumno (ID) y actualiza su registro.
+   *
+   * @param {string} nombreArchivo - Nombre temporal del archivo subido (ej. "imagen-Date.now.jpg").
+   * @param {string} id - ID del alumno al que se actualizará en nombre de la foto de perfil.
+   *
+   * @returns {Promise<void>} No retorna nada, pero actualiza la información del alumno en el repositorio.
+   *
+   * @throws {Error} Si el alumno no existe, o si ocurre un error al mover el archivo.
+   *
+   * @example
+   * await alumnoService.actualizarFotoPerfil("imagen-1760578921091.jpg", "c8b75d8e-b471-4560-9a94-80e0372e68b9");
+   */
+  async actualizarFotoPerfil(nombreArchivo, id = "") {
+    try {
+      const { alumno, index } = await alumnoRepository.obtenerPorId(id);
+
+      // validar si no se obtiene nada pues regresar un error
+
+      const oldPath = path.resolve(`uploads/${nombre}`);
+
+      const newPath = path.resolve(`uploads/${id}${extname(nombre)}`);
+
+      await fs.rename(oldPath, newPath);
+
+      alumno.perfil = newPath;
+
+      await alumnoRepository.actualizarAlumno(index, alumno);
+    } catch (error) {
+      throw error;
+    }
+  }
 }
 
 export default new AlumnoService();

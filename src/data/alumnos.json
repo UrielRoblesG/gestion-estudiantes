@@ -73,5 +73,20 @@
     "telefono": "5512340001",
     "estado": "activo",
     "materiasInscritas": []
+  },
+  {
+    "id": "2d5eca80-14b3-43b4-af13-8dd08b9ad2c8",
+    "matricula": "M20VC281",
+    "nombre": "Carmen",
+    "apellidoPaterno": "Vargas",
+    "apellidoMaterno": "Ramos",
+    "fechaNacimiento": "2000-03-25T00:00:00.000Z",
+    "email": "carmen.vargas12@mail.com",
+    "carreraPrograma": "Diseño Gráfico",
+    "semestre": 1,
+    "fechaIngreso": "2020-08-15T00:00:00.000Z",
+    "telefono": "5512340001",
+    "estado": "activo",
+    "materiasInscritas": []
   }
 ]

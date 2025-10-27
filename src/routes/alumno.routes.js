@@ -6,11 +6,16 @@ import {
   obtenerAlumnoPorId,
   eliminarAlumno,
   actualizarAlumno,
+  actualizarFotoPerfil,
 } from "../controllers/alumno.controller.js";
 
 import { validarToken } from "../middlewares/validar.token.js";
 import { validarRol } from "../middlewares/validar.rol.js";
 import { Roles } from "../types/roles.js";
+
+import { crearAlumnoSchema } from "../schemas/crear.alumno.schema.js";
+import { handleSchemaErrors } from "../middlewares/handle.schema.errors.js";
+import { subirFotoPerfil } from "../middlewares/subir.foto.perfil.js";
 /**
  * @fileoverview Rutas para la gestión de alumnos.
  * Estas rutas permiten crear, listar y consultar alumnos individuales.
@@ -39,7 +44,15 @@ route.use(validarToken);
  *   "fechaIngreso": "2020-08-15"
  * }
  */
-route.post("/", validarRol([Roles.ADMIN, Roles.COORDINADOR]), crearAlumno);
+route.post(
+  "/",
+  [
+    validarRol([Roles.ADMIN, Roles.COORDINADOR]),
+    crearAlumnoSchema,
+    handleSchemaErrors,
+  ],
+  crearAlumno
+);
 
 /**
  * @route GET /api/alumnos/
@@ -103,5 +116,10 @@ route.put(
   validarRol([Roles.ALUMNO, Roles.COORDINADOR]),
   actualizarAlumno
 );
+
+
+
+route.post('/subirFotoPerfil', subirFotoPerfil, actualizarFotoPerfil);
+
 
 export default route;
