@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Eventos en el DOM</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f7f7f7;
+      padding: 2rem;
+    }
+    section {
+      background: white;
+      border-radius: 10px;
+      padding: 1rem 2rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    h2 {
+      color: #2c3e50;
+    }
+    button {
+      padding: 8px 16px;
+      margin: 5px;
+      border: none;
+      background-color: #3498db;
+      color: white;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #2980b9;
+    }
+    .box {
+      border: 2px solid #333;
+      padding: 20px;
+      margin: 10px;
+      background: #ecf0f1;
+      border-radius: 8px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Demostración: Eventos en el DOM</h1>
+
+  <!-- 1️ Event Handlers -->
+  <section id="event-handlers">
+    <h2>1. Event Handlers (Manejadores de eventos)</h2>
+    <p>Ejemplo con <code>onclick</code> y con función separada:</p>
+    <button id="btn1" onclick="alert('Usando atributo HTML onclick')">Click (HTML)</button>
+    <button id="btn2">Click (JS)</button>
+  </section>
+
+  <!-- 2️ addEventListener vs propiedad -->
+  <section id="addEventListener">
+    <h2>2. Ventajas de addEventListener vs propiedad del objeto</h2>
+    <p>El método <code>addEventListener</code> permite agregar múltiples eventos al mismo elemento.</p>
+    <button id="btn3">Click para probar</button>
+  </section>
+
+  <!-- 3️ removeEventListener -->
+  <section id="removeEventListener">
+    <h2>3. removeEventListener y opciones adicionales</h2>
+    <p>Puedes eliminar un listener y usar opciones como <code>once</code> o <code>capture</code>.</p>
+    <button id="btn4">Click para mostrar mensaje (solo una vez)</button>
+    <button id="btnRemove">Quitar evento</button>
+  </section>
+
+  <!-- 4️ Objeto event -->
+  <section id="event-object">
+    <h2>4. El objeto <code>event</code></h2>
+    <p>Permite acceder a información sobre el evento (tipo, objetivo, coordenadas, etc.)</p>
+    <div class="box" id="area">
+      Haz clic dentro de esta caja para ver información del evento.
+    </div>
+  </section>
+
+  <!-- 5️ Bubbling y Capturing -->
+  <section id="bubbling">
+    <h2>5. Event Bubbling y Capturing</h2>
+    <p>Haz clic en el cuadro interno y observa el orden de propagación.</p>
+    <div class="box" id="outer">
+      Padre
+      <div class="box" id="inner">
+        Hijo
+      </div>
+    </div>
+  </section>
+
+  <!-- 6️ Delegación de eventos -->
+  <section id="delegacion">
+    <h2>6. Delegación de eventos</h2>
+    <p>El contenedor escucha todos los clics de sus elementos hijos.</p>
+    <div class="box" id="listado">
+      <button>Botón 1</button>
+      <button>Botón 2</button>
+      <button>Botón 3</button>
+    </div>
+  </section>
+
+  <script>
+
+  </script>
+</body>
+</html>
