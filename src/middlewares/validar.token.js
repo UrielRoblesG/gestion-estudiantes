@@ -20,6 +20,7 @@ const tokenParser = (token = "") => {
     // 2. Convertir el Buffer a una cadena de texto, asumiendo codificación UTF-8 para el JSON.
     const jsonString = tokenBuffer.toString("utf8");
 
+    console.log(jsonString);
     // 3. Parsear la cadena de texto como un objeto JSON.
     return JSON.parse(jsonString);
   } catch (error) {
