@@ -1,6 +1,7 @@
 import usuarioRepository from "../repositories/usuario.repository.js";
 import { Usuario } from "../Models/usuario.js";
 import { EMAIL_REGEX } from "../utils/email.exp.js";
+import { Roles } from "../types/roles.js";
 
 /**
  * @module AutenticacionService
@@ -29,7 +30,7 @@ class AutenticacionService {
    *   console.log("Login exitoso:", resultado.token);
    * }
    *
-   * @returns {Promise<{token?: string, error?: string}>}
+   * @returns {Promise<{token?: string, view?: string ,error?: string}>}
    * - **token**: Token de autenticación simulado si las credenciales son correctas.
    * - **error**: Mensaje de error si el inicio de sesión falla.
    */
@@ -67,7 +68,13 @@ class AutenticacionService {
       // En la práctica se usaría jsonwebtoken.sign(payload, secret, options)
       const tokenSimulado = this._simularGeneracionToken(usuario);
 
-      return { token: tokenSimulado };
+      // Obtener vista
+      const vista = this._obtenerRutaHome(usuario.rol);
+
+      return { 
+        token: tokenSimulado, 
+        view: vista
+      };
     } catch (error) {
       throw error;
     }
@@ -122,6 +129,19 @@ class AutenticacionService {
 
   // ========== Metodos privados ============
 
+
+  _obtenerRutaHome(rol = '') {
+    if (rol === Roles.ADMIN) {
+      return '/admin/home';
+    }
+    else if (rol === Roles.COORDINADOR) {
+      return '/coordinador/home';
+    }
+    else {
+      return null;
+    }
+  }
+
   /**
    * Simula la comparación de una contraseña sin encriptar con una encriptada.
    *
@@ -157,7 +177,7 @@ class AutenticacionService {
     const base64Payload = Buffer.from(JSON.stringify(payload)).toString(
       "base64"
     );
-    const tokenFalso = `FAKE.JWT.${base64Payload}`;
+    const tokenFalso = `${base64Payload}`;
 
     return tokenFalso;
   }

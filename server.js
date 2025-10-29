@@ -58,8 +58,9 @@ app.use('/api/autenticacion', autenticacionRoute);
  *   - POST http://127.0.0.1:3000/api/autenticacion/login
  *   - POST http://127.0.0.1:3000/api/autenticacion/registro
  */
+ 
 
-
+//* Rutas de las vistas
 
 // Aqui van los middlewares de manejo de errores
 app.use(handleServerErrors);

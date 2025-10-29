@@ -30,7 +30,7 @@ import autenticacionService from "../services/autenticacion.service.js";
  * - **401 Unauthorized**: Error en las credenciales o fallo en la autenticación.
  */
 export const iniciarSesion = async (req = request, res = response) => {
-    const {token, error} = await autenticacionService.intentarLogin(req.body);
+    const {token, view,error} = await autenticacionService.intentarLogin(req.body);
 
     if (error) {
         return res.status(401).json({
@@ -42,9 +42,10 @@ export const iniciarSesion = async (req = request, res = response) => {
     res.status(200).json({
         mensaje: 'Autenticación exitosa',
         data: {
-            token: token
+            token: token,
+            view : view
         }
-    })
+    });
 }
 
 

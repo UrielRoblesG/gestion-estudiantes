@@ -12,10 +12,9 @@ import {
 import { validarToken } from "../middlewares/validar.token.js";
 import { validarRol } from "../middlewares/validar.rol.js";
 import { Roles } from "../types/roles.js";
-
+import { subirFotoPerfil } from "../middlewares/subir.foto.perfil.js";
 import { crearAlumnoSchema } from "../schemas/crear.alumno.schema.js";
 import { handleSchemaErrors } from "../middlewares/handle.schema.errors.js";
-import { subirFotoPerfil } from "../middlewares/subir.foto.perfil.js";
 /**
  * @fileoverview Rutas para la gestión de alumnos.
  * Estas rutas permiten crear, listar y consultar alumnos individuales.
@@ -44,22 +43,14 @@ route.use(validarToken);
  *   "fechaIngreso": "2020-08-15"
  * }
  */
-route.post(
-  "/",
-  [
-    validarRol([Roles.ADMIN, Roles.COORDINADOR]),
-    crearAlumnoSchema,
-    handleSchemaErrors,
-  ],
-  crearAlumno
-);
+route.post("/", [validarRol([Roles.ADMIN, Roles.COORDINADOR]), crearAlumnoSchema, handleSchemaErrors], crearAlumno);
 
 /**
  * @route GET /api/alumnos/
  * @description Obtiene la lista completa de alumnos registrados.
  * @returns {Array<Object>} Lista de alumnos.
  */
-route.get("/", validarRol([Roles.COORDINADOR]), obtenerAlumnos);
+route.get("/", validarRol([Roles.COORDINADOR, Roles.ADMIN]), obtenerAlumnos);
 
 /**
  * @route GET /api/alumnos/:id
@@ -77,7 +68,7 @@ route.get("/", validarRol([Roles.COORDINADOR]), obtenerAlumnos);
  */
 route.get(
   "/:id",
-  validarRol([Roles.COORDINADOR, Roles.ALUMNO]),
+  validarRol([Roles.COORDINADOR, Roles.ALUMNO, Roles.ADMIN]),
   obtenerAlumnoPorId
 );
 
@@ -95,7 +86,7 @@ route.get(
  *   "carrera": "Derecho"
  * }
  */
-route.delete("/:id", validarRol([Roles.COORDINADOR]), eliminarAlumno);
+route.delete("/:id", validarRol([Roles.COORDINADOR, Roles.ADMIN]), eliminarAlumno);
 
 /**
  * @route PUT /api/alumnos/
@@ -118,8 +109,6 @@ route.put(
 );
 
 
-
-route.post('/subirFotoPerfil', subirFotoPerfil, actualizarFotoPerfil);
-
+route.post('/subirFotoPerfil', [subirFotoPerfil], actualizarFotoPerfil);
 
 export default route;

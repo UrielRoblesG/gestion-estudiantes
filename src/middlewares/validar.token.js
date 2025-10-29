@@ -2,45 +2,95 @@ import { request, response } from "express";
 
 import { Roles } from "../types/roles.js";
 
+/**
+ * Decodifica una cadena Base64 que se espera contenga un objeto JSON y lo convierte a un objeto JavaScript.
+ *
+ * Esta función es esencial para extraer la información (payload) de un token (como un JWT simple
+ * o un payload codificado en Base64) en un entorno Node.js/servidor.
+ *
+ * @param {string} [token=""] - La cadena de texto Base64 a decodificar.
+ * @returns {object | null} El objeto JavaScript decodificado (el payload del token),
+ * o `null` si la cadena de entrada es inválida, está vacía, o el parseo JSON falla.
+ */
+const tokenParser = (token = "") => {
+  try {
+    // 1. Decodificar la cadena Base64 a un Buffer binario.
+    const tokenBuffer = Buffer.from(token, "base64");
 
+    // 2. Convertir el Buffer a una cadena de texto, asumiendo codificación UTF-8 para el JSON.
+    const jsonString = tokenBuffer.toString("utf8");
+
+    // 3. Parsear la cadena de texto como un objeto JSON.
+    return JSON.parse(jsonString);
+  } catch (error) {
+    // Captura errores como: Base64 inválido, JSON mal formado o token vacío.
+    return null;
+  }
+};
 
 /**
- * Middleware para validar el token de autorización y asignar un rol de usuario.
- * 
- * Este middleware revisa el header `authorization` de la solicitud y, según el contenido
- * del token (simulado en este ejemplo), determina el tipo de usuario (rol):
- * - Contiene "tipo1" → ADMIN
- * - Contiene "tipo2" → COORDINADOR
- * - Contiene "tipo3" → ALUMNO
- * 
- * Luego agrega el rol correspondiente en `req.headers["tipo-usuario"]` para que
- * otros middlewares, como `validarRol`, puedan usarlo.
- * 
- * Si el token no coincide con ninguno de los tipos esperados, devuelve un
- * error HTTP 401 (Unauthorized) indicando que el token es inválido.
- * 
- * También registra en consola el contenido de los headers después de asignar el rol.
- * 
- * @param {import('express').Request} req - Objeto de solicitud HTTP.
- * @param {import('express').Response} res - Objeto de respuesta HTTP.
- * @param {import('express').NextFunction} next - Función que transfiere el control al siguiente middleware.
+ * Middleware para validar la autenticidad y el rol de un usuario basado en un token JWT (simulado).
+ *
+ * 1. Extrae el token del encabezado 'Authorization' (espera el formato 'Bearer <token>').
+ * 2. Decodifica el token usando `tokenParser` para obtener el payload del usuario.
+ * 3. Valida que el rol del usuario decodificado exista dentro de las constantes 'Roles'.
+ * 4. Si es exitoso, inyecta el rol del usuario en `req.headers["tipo-usuario"]` y llama a `next()`.
+ * 5. Si falla la validación del rol, responde con un estado 401 (No Autorizado).
+ *
+ * @param {express.Request} req - Objeto de solicitud de Express.
+ * @param {express.Response} res - Objeto de respuesta de Express.
+ * @param {express.NextFunction} next - Función para pasar el control al siguiente middleware/controlador.
+ * @returns {void | express.Response} Llama a `next()` o retorna una respuesta de error 401.
+ *
+ * @requires Buffer - Para la decodificación Base64 en `tokenParser`.
+ * @requires Roles - Objeto de constantes con los roles válidos (ADMIN, COORDINADOR, ALUMNO).
  */
 export const validarToken = (req = request, res = response, next) => {
+  // Extraer el encabezado de autorización
   const { authorization } = req.headers;
+
+  // Manejar token no presente o en formato incorrecto (solo Bearer)
+  if (!authorization || !authorization.startsWith("Bearer ")) {
+    return res.status(401).json({
+      mensaje: "Token de autorización faltante o con formato incorrecto",
+      error: "Se esperaba el formato 'Bearer <token>'",
+    });
+  }
+
+  // Obtener solo la parte del token después de "Bearer "
+  const token = authorization.split(" ")[1];
+
+  // Decodificar el payload del token
+  const user = tokenParser(token);
+
+  // Si el token no se pudo parsear (inválido, expirado, etc.)
+  if (!user) {
+    return res.status(401).json({
+      mensaje: "Token inválido o corrupto",
+      error: "El token no pudo ser decodificado correctamente.",
+    });
+  }
 
   let tipoUsuario = "";
 
-  if (authorization.includes("tipo1")) tipoUsuario = Roles.ADMIN;
-  else if (authorization.includes("tipo2")) tipoUsuario = Roles.COORDINADOR;
-  else if (authorization.includes("tipo3")) tipoUsuario = Roles.ALUMNO;
-  else
+  // Validar que el rol decodificado sea uno de los roles esperados
+  if (user.rol == Roles.ADMIN) {
+    tipoUsuario = Roles.ADMIN;
+  } else if (user.rol == Roles.COORDINADOR) {
+    tipoUsuario = Roles.COORDINADOR;
+  } else if (user.rol == Roles.ALUMNO) {
+    tipoUsuario = Roles.ALUMNO;
+  } else {
+    // Si el rol existe pero no coincide con los roles conocidos
     return res.status(401).json({
       mensaje: "Token invalido",
-      error: "El token ha sido manipulado",
+      error: "El rol dentro del token no es reconocido o ha sido manipulado",
     });
+  }
 
+  // Inyectar el tipo de usuario validado en los headers de la solicitud para uso posterior
   req.headers["tipo-usuario"] = tipoUsuario;
 
-  console.log(req.headers);
+  // Continuar con el siguiente manejador de la ruta
   next();
 };

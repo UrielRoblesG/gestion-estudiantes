@@ -1,3 +1,6 @@
+import { fileURLToPath } from "node:url";
+import path from 'node:path';
+
 /**
  * @fileoverview Define las constantes inmutables para las rutas (paths) físicas
  * de las vistas del front-end, utilizando la ruta raíz del proyecto como base.
@@ -38,6 +41,8 @@ export const Routas = Object.freeze({
         '/coordinador/alumno' : `` 
     },
     Admin : {
-        
+        '/admin/home' : ``,
+        '/admin/coordinador/' : ``,
+        '/admin/alumno' : ``,
     },
 });

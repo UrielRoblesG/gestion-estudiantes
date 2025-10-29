@@ -6,5 +6,4 @@ const route = Router();
 
 
 
-
 export default route;

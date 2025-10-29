@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+
+
+    <style>
+        p {
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+    <p>
+        Contador: <p id="contador">0</p>
+    </p>
+    <br>
+    <p>
+        Numero de clics: <p id="clics">0</p>
+    </p>
+    <br>
+    <button id="btnIncrementar">Incrementar</button>
+    <button id="btnDecrementar">Decrementar</button>
+
+
+    <script>
+        let contador = 0;
+        let clics = 0;
+        const pContador = document.getElementById('contador');
+        const pClics = document.getElementById('clics');
+        const btnIncrementar = document.getElementById('btnIncrementar');
+        const btnDecrementar = document.getElementById('btnDecrementar');
+
+        const setState = () => {
+            pContador.textContent = contador;
+            pClics.textContent = clics;
+        }
+
+        const incrementar =  () => {
+            contador++;
+            setState();
+        }
+
+        const decrementar = () => {
+
+            if (contador==0) return;
+
+            contador--;
+            setState();
+        }
+
+        const sumarClics = () => {
+            clics++;
+            setState();
+        }
+
+        btnIncrementar.addEventListener('click', incrementar);
+        btnIncrementar.addEventListener('click', sumarClics);
+
+        btnDecrementar.addEventListener('click', decrementar);
+        btnDecrementar.addEventListener('click', sumarClics);
+
+        
+    </script>
+</body>
+</html>
