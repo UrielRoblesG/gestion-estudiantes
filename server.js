@@ -8,6 +8,8 @@ import express from "express";
 
 import alumnoRoute from './src/routes/alumno.routes.js';
 import autenticacionRoute from './src/routes/auth.route.js';
+import authViewRoutes from "./src/routes/auth.views.routes.js";
+import adminViewRoutes from "./src/routes/admin.view.route.js";
 import { requestLogs } from "./src/middlewares/request.logs.js";
 import { fileLogger } from "./src/middlewares/file.logger.js";
 import { handleServerErrors } from "./src/middlewares/handle.server.errors.js";
@@ -61,7 +63,8 @@ app.use('/api/autenticacion', autenticacionRoute);
  
 
 //* Rutas de las vistas
-
+app.use(authViewRoutes);
+app.use('/admin',adminViewRoutes);
 // Aqui van los middlewares de manejo de errores
 app.use(handleServerErrors);
 

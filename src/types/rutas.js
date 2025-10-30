@@ -24,7 +24,7 @@ const rutaRaizProyecto = path.resolve(__dirname, '../..');
  * @description Objeto inmutable que almacena la ubicación física de los archivos HTML
  * de las vistas del front-end, agrupadas por su contexto lógico (e.g., Auth).
  */
-export const Routas = Object.freeze({
+export const Rutas = Object.freeze({
     /**
      * @constant
      * @type {Readonly<{[key: string]: string}>}
@@ -41,7 +41,7 @@ export const Routas = Object.freeze({
         '/coordinador/alumno' : `` 
     },
     Admin : {
-        '/admin/home' : ``,
+        '/admin/home' : `${rutaRaizProyecto}/front-end/views/home.admin.html`,
         '/admin/coordinador/' : ``,
         '/admin/alumno' : ``,
     },

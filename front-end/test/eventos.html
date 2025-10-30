@@ -101,9 +101,9 @@
       <h2>6. Delegación de eventos</h2>
       <p>El contenedor escucha todos los clics de sus elementos hijos.</p>
       <div class="box" id="listado">
-        <button>Botón 1</button>
-        <button>Botón 2</button>
-        <button>Botón 3</button>
+        <button id="btn1" data-idUsuario="btn1">Botón 1</button>
+        <button id="btn2" data-idUsuario="btn2">Botón 2</button>
+        <button id="btn3" data-idUsuario="btn3">Botón 3</button>
       </div>
     </section>
 
@@ -194,6 +194,22 @@
       inner.addEventListener("click", () => alert("Hijo (Captura)"), {
         capture: true,
       });
+
+      // ================================
+      // 6️ Delegación de eventos
+      // ================================
+
+      const listado = document.getElementById('listado');
+      listado.addEventListener('click', (event) => {
+        event.stopPropagation();
+        if (event.target.tagName != 'BUTTON') return;
+
+        alert(`Pulsaste el botton: `, event.target);
+        // eliminar usuario
+      });
+
+
+
     </script>
   </body>
 </html>
