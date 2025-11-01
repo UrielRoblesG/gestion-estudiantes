@@ -107,15 +107,8 @@ class AutenticacionService {
    */
   async registrarUsuario(nuevoUsuarioData) {
     try {
-      const errores = await this._validarUsuario(nuevoUsuarioData);
 
-      if (errores.length > 0) {
-        return { error: errores };
-      }
-
-      const nuevoUsuario = Usuario.fromObject(nuevoUsuarioData);
-
-      const { error } = await usuarioRepository.agregarUsuario(nuevoUsuario);
+      const { usuario: nuevoUsuario ,error } = await usuarioRepository.agregarUsuario(nuevoUsuarioData);
 
       if (error) {
         return { error };
@@ -182,30 +175,6 @@ class AutenticacionService {
     return tokenFalso;
   }
 
-  async _validarUsuario(usuarioData) {
-    let errores = [];
-    // a) Campos obligatorios
-    const camposObligatorios = ["nombre", "email", "password"];
-
-    for (const campo of camposObligatorios) {
-      if (!usuarioData[campo]) {
-        const err = `[Validacion] El campo '${campo}' es obligatorio.`;
-        errores.push(err);
-      }
-    }
-
-    // b) Validar formato de email
-    if (!EMAIL_REGEX.test(usuarioData.email)) {
-      errores.push("[Validacion] El formato del email es inválido.");
-    }
-
-    if (await usuarioRepository.buscarPorEmail(usuarioData.email)) {
-      errores.push(
-        `[Validacion] Ya existe un usuario registrado con el email: ${usuarioData.email}.`
-      );
-    }
-    return errores;
-  }
 }
 
 export default new AutenticacionService();

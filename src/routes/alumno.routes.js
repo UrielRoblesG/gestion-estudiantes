@@ -13,7 +13,7 @@ import { validarToken } from "../middlewares/validar.token.js";
 import { validarRol } from "../middlewares/validar.rol.js";
 import { Roles } from "../types/roles.js";
 import { subirFotoPerfil } from "../middlewares/subir.foto.perfil.js";
-import { crearAlumnoSchema } from "../schemas/crear.alumno.schema.js";
+import { crearAlumnoDTO } from "../DTOs/crear.alumno.dto.js";
 import { handleSchemaErrors } from "../middlewares/handle.schema.errors.js";
 /**
  * @fileoverview Rutas para la gestión de alumnos.
@@ -43,7 +43,7 @@ route.use(validarToken);
  *   "fechaIngreso": "2020-08-15"
  * }
  */
-route.post("/", [validarRol([Roles.ADMIN, Roles.COORDINADOR]), crearAlumnoSchema, handleSchemaErrors], crearAlumno);
+route.post("/", [validarRol([Roles.ADMIN, Roles.COORDINADOR]), crearAlumnoDTO, handleSchemaErrors], crearAlumno);
 
 /**
  * @route GET /api/alumnos/

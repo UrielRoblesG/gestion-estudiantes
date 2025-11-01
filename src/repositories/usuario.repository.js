@@ -1,10 +1,3 @@
-import path from "path";
-import { readFile, writeFile } from "node:fs/promises";
-import { Usuario } from "../Models/usuario.js";
-import { error } from "node:console";
-
-const dataPath = path.resolve("./src/data/usuarios.json");
-
 /**
  * @module UsuarioRepository
  * @description
@@ -18,7 +11,7 @@ class UsuarioRepository {
    *
    * @async
    * @function agregarUsuario
-   * @param {Usuario} usuario - Instancia del usuario a guardar.
+   * @param {UsuarioDto} usuario - Instancia del usuario a guardar.
    *
    * @example
    * const nuevoUsuario = new Usuario("Juan", "juan@example.com", "123456");
@@ -31,15 +24,8 @@ class UsuarioRepository {
    * @returns {Promise<{error: (Error|null)}>}
    * - **error**: Objeto `Error` si ocurre una falla al escribir el archivo, o `null` si el guardado fue exitoso.
    */
-  async agregarUsuario(usuario = new Usuario()) {
+  async agregarUsuario(usuarioDto) {
     try {
-      const data = await readFile(dataPath, 'utf-8');
-
-      const usuarios = JSON.parse(data || '[]');
-
-      usuarios.push(usuario);
-
-      await writeFile(dataPath, JSON.stringify(usuarios, null, 2));
       
       return {error : null}
     } catch (error) {
@@ -68,18 +54,10 @@ class UsuarioRepository {
    */
   async buscarPorEmail(email) {
     try {
-      // Leer archivo y parsear los datos
-      const data = await readFile(dataPath, "utf-8");
-      const usuarios = JSON.parse(data || "[]");
 
-      // Buscar usuario
-      const usuario = usuarios.find(u => u.email === email);
-      
-      return usuario;
+      return { error: null };
     } catch (error) {
-      // Si el archivo no existe, retornamos undefined
-      if (error.code === "ENOENT") return undefined;
-      throw error;
+      return {error}
     }
   }
 }
