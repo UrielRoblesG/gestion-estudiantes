@@ -1,3 +1,4 @@
+
 import { checkSchema } from "express-validator";
 
 
@@ -40,7 +41,7 @@ import { checkSchema } from "express-validator";
  * @constant
  * @type {import('express-validator').Schema}
  */
-export const crearAlumnoSchema = checkSchema({
+export const crearAlumnoDTO = checkSchema({
   nombre: {
     notEmpty: {
       errorMessage: "El nombre es obligatorio",

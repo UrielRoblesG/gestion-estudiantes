@@ -4,9 +4,6 @@
 import { checkSchema } from "express-validator";
 import { Roles } from "../types/roles.js";
 
-
-
-
 /**
  * Esquema de validación para la ruta /api/registro.
  * 
@@ -40,7 +37,7 @@ import { Roles } from "../types/roles.js";
  * @constant
  * @type {import('express-validator').Schema}
  */
-export const registroSchema = checkSchema({
+export const registroDTO = checkSchema({
     nombre : {
         notEmpty: {
             errorMessage: 'El campo nombre es obligatorio'

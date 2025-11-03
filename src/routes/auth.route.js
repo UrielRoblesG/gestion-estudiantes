@@ -6,7 +6,7 @@ import { Router } from "express";
 
 import { iniciarSesion, registro } from "../controllers/auth.controller.js";
 
-import { registroSchema } from "../schemas/registro.schema.js";
+import { registroDTO } from "../DTOs/registro.dto.js";
 
 import { handleSchemaErrors } from "../middlewares/handle.schema.errors.js";
 
@@ -45,6 +45,6 @@ route.post('/login', iniciarSesion);
  * @returns {object} 201 - Usuario creado exitosamente.
  * @returns {object} 400 - Error de validación o correo ya existente.
  */
-route.post('/registro', [registroSchema, handleSchemaErrors] ,registro);
+route.post('/registro', [registroDTO, handleSchemaErrors] ,registro);
 
 export default route;
