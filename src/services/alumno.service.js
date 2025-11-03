@@ -60,7 +60,7 @@ class AlumnoService {
   async obtenerAlumno(id) {
     try {
       // Convertir el ID a número
-      const parsedID = Number.parseInt(id);
+      const parsedID =id ;
 
       // Llamar al repositorio para buscar el alumno
       const { alumno } = await alumnoRepository.obtenerPorId(parsedID);
