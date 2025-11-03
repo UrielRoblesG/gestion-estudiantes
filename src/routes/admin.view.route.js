@@ -12,4 +12,12 @@ router.get('/home', (req, res) => {
     res.sendFile(Rutas.Admin[path]);
 });
 
+router.get('/alumno/:id', (req, res) => {
+    const reqPath = req.url.split('/')[1];
+    const ruta = `${req.baseUrl}/${reqPath}` ;
+    const path = Rutas.Admin[ruta];
+    res.sendFile(path);
+})
+
+
 export default router;

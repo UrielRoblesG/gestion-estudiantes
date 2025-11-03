@@ -43,6 +43,6 @@ export const Rutas = Object.freeze({
     Admin : {
         '/admin/home' : `${rutaRaizProyecto}/front-end/views/home.admin.html`,
         '/admin/coordinador/' : ``,
-        '/admin/alumno' : ``,
+        '/admin/alumno' : `${rutaRaizProyecto}/front-end/views/alumno.html`,
     },
 });
