@@ -11,7 +11,7 @@ class UsuarioRepository {
    *
    * @async
    * @function agregarUsuario
-   * @param {UsuarioDto} usuario - Instancia del usuario a guardar.
+   * @param {User} usuario - Instancia del usuario a guardar.
    *
    * @example
    * const nuevoUsuario = new Usuario("Juan", "juan@example.com", "123456");
