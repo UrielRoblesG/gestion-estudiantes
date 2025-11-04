@@ -13,6 +13,9 @@ import adminViewRoutes from "./src/routes/admin.view.route.js";
 import { requestLogs } from "./src/middlewares/request.logs.js";
 import { fileLogger } from "./src/middlewares/file.logger.js";
 import { handleServerErrors } from "./src/middlewares/handle.server.errors.js";
+import configService from "./src/utils/config.service.js";
+
+
 import cors from 'cors';
 
 const app = express();
@@ -69,8 +72,8 @@ app.use('/admin',adminViewRoutes);
 app.use(handleServerErrors);
 
 // Configuración del servidor - Mas tardes utilizaremos variables de entorno
-const host = "127.0.0.1";
-const port = 3000;
+const host = configService.HOST;
+const port = configService.PORT;
 
 /**
  * Inicia el servidor en el host y puerto definidos.
