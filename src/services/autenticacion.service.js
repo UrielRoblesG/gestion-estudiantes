@@ -1,7 +1,6 @@
+
 import usuarioRepository from "../repositories/usuario.repository.js";
-import { Usuario } from "../Models/usuario.js";
-import { EMAIL_REGEX } from "../utils/email.exp.js";
-import { Roles } from "../types/roles.js";
+import {Roles} from '../types/roles.js';
 
 /**
  * @module AutenticacionService
@@ -43,9 +42,7 @@ class AutenticacionService {
         return { error: "Correo y contraseña son requeridos" };
       }
 
-      const usuario = await usuarioRepository.buscarPorEmail(
-        email.toLowerCase()
-      );
+      const usuario = await usuarioRepository.buscarPorEmail(email.toLowerCase());
 
       if (!usuario) {
         return {
@@ -69,7 +66,7 @@ class AutenticacionService {
       const tokenSimulado = this._simularGeneracionToken(usuario);
 
       // Obtener vista
-      const vista = this._obtenerRutaHome(usuario.rol);
+      const vista = this._obtenerRutaHome(usuario.rol.nombre);
 
       return { 
         token: tokenSimulado, 
@@ -85,16 +82,18 @@ class AutenticacionService {
    *
    * @async
    * @function registrarUsuario
-   * @param {Object} nuevoUsuarioData - Datos del usuario a registrar.
-   * @param {string} nuevoUsuarioData.nombre - Nombre completo del usuario.
-   * @param {string} nuevoUsuarioData.email - Correo electrónico del usuario.
-   * @param {string} nuevoUsuarioData.password - Contraseña del usuario.
+   * @param {Object} nuevoUsuarioDto - Datos del usuario a registrar.
+   * @param {string} nuevoUsuarioDto.nombre - Nombre completo del usuario.
+   * @param {string} nuevoUsuarioDto.email - Correo electrónico del usuario.
+   * @param {string} nuevoUsuarioDto.password - Contraseña del usuario.
+   * @param {string} nuevoUsuarioDto.rol - Rol del usuario.
    *
    * @example
    * const resultado = await autenticacionService.registrarUsuario({
    *   nombre: "Juan Pérez",
    *   email: "juan@example.com",
-   *   password: "123456"
+   *   password: "123456",
+   *   rol: "Admin",
    * });
    *
    * if (resultado.usuario) {
@@ -105,16 +104,35 @@ class AutenticacionService {
    * - **usuario**: Objeto del nuevo usuario si se registró correctamente.
    * - **error**: Mensaje o lista de errores si hubo problemas de validación o registro.
    */
-  async registrarUsuario(nuevoUsuarioData) {
+  async registrarUsuario(nuevoUsuarioDto) {
     try {
 
-      const { usuario: nuevoUsuario ,error } = await usuarioRepository.agregarUsuario(nuevoUsuarioData);
+      const {email, password, nombre, rol } = nuevoUsuarioDto;
 
-      if (error) {
-        return { error };
+      const usuarioExiste = await usuarioRepository.buscarPorEmail(email.toLowerCase());
+
+      if (usuarioExiste) {
+        return {error: 'El email ya esta registrado.'};
       }
 
-      return { usuario: nuevoUsuario };
+      // Buscar el id del rol
+      const rolUsuario =  await usuarioRepository.buscarRolPorNombre(rol.toUpperCase());
+
+      if (!rolUsuario) {
+        return {error: `El rol ${rol} no es un rol valido.`};
+      }
+
+
+      const nuevoUsuarioData = {
+        email : email,
+        password : password,
+        nombre : nombre,
+        rol: rolUsuario._id
+      };
+
+      const nuevoUsuario = await usuarioRepository.agregarUsuario(nuevoUsuarioData);
+      
+      return nuevoUsuario;
     } catch (error) {
       return { error };
     }
@@ -162,7 +180,7 @@ class AutenticacionService {
     const payload = {
       id: usuario.id,
       email: usuario.email,
-      rol: usuario.rol || "usuario",
+      rol: usuario.rol.nombre || "usuario",
       emitidoEn: new Date().toISOString(),
     };
 

@@ -12,7 +12,7 @@
  * @property {string} ALUMNO El rol con permisos limitados, asociado a un usuario final o estudiante.
  */
 export const Roles = Object.freeze({
-    ADMIN : 'Admin',
-    COORDINADOR : 'Coordinador',
-    ALUMNO: 'Alumno'
+    ADMIN : 'ADMIN',
+    COORDINADOR : 'COORDINADOR',
+    ALUMNO: 'ALUMNO'
 });

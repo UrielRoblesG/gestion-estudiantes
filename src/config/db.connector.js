@@ -1,11 +1,11 @@
+class Database {
+  constructor() {}
 
+  async conectar() {}
 
-
-class DbConnector {
-
+  configurarListeners() {}
 }
 
+const database = new Database();
 
-const dbConnector =  new DbConnector();
-
-export default dbConnector;
+export default database;
