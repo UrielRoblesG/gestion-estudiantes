@@ -6,7 +6,7 @@ class ConfigService {
     constructor(){
         this.PORT = process.env.PORT;
         this.HOST = process.env.HOST;
-        this.DATABASE_CONNECTION = process.env.HOST;
+        this.DATABASE_URI = process.env.DATABASE_URI;
     }
 }
 
