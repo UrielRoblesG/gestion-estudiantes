@@ -94,7 +94,7 @@ class AlumnoService {
 
   async actualizarAlumno(id, data) {
     try {
-      const updatedAlumno = await AlumnoRepository.update(id, updateData);
+      const updatedAlumno = await alumnoRepository.actualizarAlumno(id, data);
         if (!updatedAlumno) {
             throw new Error(`Alumno con ID ${id} no encontrado para actualizar.`);
         }

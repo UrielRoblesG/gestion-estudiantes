@@ -104,7 +104,7 @@ route.delete("/:id", validarRol([Roles.COORDINADOR, Roles.ADMIN]), eliminarAlumn
  */
 route.put(
   "/:id",
-  validarRol([Roles.ALUMNO, Roles.COORDINADOR]),
+  validarRol([Roles.ADMIN, Roles.COORDINADOR]),
   actualizarAlumno
 );
 

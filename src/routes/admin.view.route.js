@@ -20,4 +20,15 @@ router.get('/alumno/:id', (req, res) => {
     res.sendFile(path);
 })
 
+
+router.get('/alumno/editar/:id', (req, res) => {
+    const reqPath = req.url.split('/')[2];
+    console.warn(reqPath);
+    const ruta = `${req.baseUrl}/${reqPath}`;
+    console.warn(ruta);
+    const path = Rutas.Admin[ruta];
+    console.warn(path);
+    res.sendFile(path);
+}) 
+
 export default router;

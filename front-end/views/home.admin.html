@@ -7,7 +7,6 @@
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
       rel="stylesheet"
-      integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
       crossorigin="anonymous"
     />
     <style>
@@ -19,34 +18,370 @@
         border: 3px solid #0d6efd; /* Color primario de Bootstrap */
         margin-bottom: 10px;
       }
+      /* Estilo para el navbar (simulación, ya que el script externo no está disponible) */
+      #header {
+        background-color: #0d6efd;
+        color: white;
+        padding: 10px 0;
+      }
+      .navbar-brand {
+        color: white !important;
+        font-weight: bold;
+      }
     </style>
   </head>
   <body>
-    <!--Aqui va un navbar -->
-    <header id="header"></header>
+    <!-- Navbar simple para simular la inclusión de scripts/navbar.js -->
+    <header id="header">
+      <nav class="navbar navbar-expand-lg">
+        <div class="container">
+          <a class="navbar-brand" href="#">Panel Admin</a>
+          <span class="navbar-text text-white">Gestión Estudiantes</span>
+        </div>
+      </nav>
+    </header>
 
     <main class="container mt-5 mb-4">
-      <h1 class="mb-4 text-primary">Alumnos Registrados</h1>
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="text-primary">Alumnos Registrados</h1>
+        <button
+          class="btn btn-success"
+          data-bs-toggle="modal"
+          data-bs-target="#registroModal"
+        >
+          + Registrar Nuevo Alumno
+        </button>
+      </div>
       <hr />
 
-      <div class="alert alert-primary d-none" role="alert" id="msg-alert">
-      </div>
-
+      <!-- Alerta General para mensajes de éxito/error -->
+      <div class="alert alert-primary d-none" role="alert" id="msg-alert"></div>
+      
+      <!-- Grid donde se insertarán los alumnos -->
       <div
         id="alumnos-grid"
         class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4"
       >
-        <!-- Aqui se van a insertar los alumnos -->
+        <div class="col"><p class="text-center text-muted">Cargando alumnos...</p></div>
       </div>
     </main>
 
+    <!-- Modal de Registro de Alumno -->
+    <div class="modal fade" id="registroModal" tabindex="-1" aria-labelledby="registroModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header bg-primary text-white">
+            <h5 class="modal-title" id="registroModalLabel">Registrar Nuevo Alumno</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <!-- Alerta para el modal -->
+            <div id="modal-alert" class="alert d-none" role="alert"></div>
+
+            <form id="formRegistro" class="needs-validation" novalidate>
+              <div class="mb-3">
+                <label for="regNombre" class="form-label">Nombre</label>
+                <input type="text" class="form-control" id="regNombre" required minlength="2">
+                <div class="invalid-feedback">El nombre es obligatorio.</div>
+              </div>
+              <div class="mb-3">
+                <label for="regApellido" class="form-label">Apellido Paterno</label>
+                <input type="text" class="form-control" id="regApellido" required minlength="2">
+                <div class="invalid-feedback">El apellido es obligatorio.</div>
+              </div>
+              <div class="mb-3">
+                <label for="regEmail" class="form-label">Email</label>
+                <input type="email" class="form-control" id="regEmail" required>
+                <div class="invalid-feedback">Introduce un email válido.</div>
+              </div>
+              <div class="mb-3">
+                <label for="regCarrera" class="form-label">Carrera/Programa</label>
+                <input type="text" class="form-control" id="regCarrera" required>
+                <div class="invalid-feedback">La carrera es obligatoria.</div>
+              </div>
+              
+              <div class="d-grid mt-4">
+                <button type="submit" id="btnRegistro" class="btn btn-primary">
+                  <span id="btnRegistro-text">Registrar Alumno</span>
+                  <span id="btnRegistro-loader" class="spinner-border spinner-border-sm ms-2 d-none" role="status"></span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scripts de Bootstrap y Lógica JS -->
     <script
       src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-      integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
       crossorigin="anonymous"
     ></script>
 
-    <script src="/scripts/navbar.js"></script>
-    <script src="/scripts/admin.home.js"></script>
+    <script>
+      // Token y URI base
+      const API_TOKEN =
+        "eyJpZCI6IjY5MGJmNzQ3NDdjYzc2ZmU3NzIwZmQ3YSIsImVtYWlsIjoiYWRtaW5AY29ycmVvLmNvbSIsInJvbCI6IkFETUlOIiwiZW1pdGlkb0VuIjoiMjAyNS0xMS0xMVQxNjowMTozNC45NDFaIn0=";
+      const API_ALUMNOS_URI = "/api/alumnos";
+      const alumnosGrid = document.getElementById("alumnos-grid");
+      const generalAlert = document.getElementById("msg-alert");
+
+      // Referencias del Modal de Registro
+      const registroModalElement = document.getElementById('registroModal');
+      const modalBootstrap = new bootstrap.Modal(registroModalElement); // Instancia del modal
+      const formRegistro = document.getElementById('formRegistro');
+      const modalAlert = document.getElementById('modal-alert');
+      const btnRegistro = document.getElementById('btnRegistro');
+      const btnRegistroText = document.getElementById('btnRegistro-text');
+      const btnRegistroLoader = document.getElementById('btnRegistro-loader');
+
+      // Función de Utilidad: Mostrar Alerta General
+      const mostrarAlerta = (msg = "", type = "primary") => {
+        generalAlert.textContent = msg;
+        generalAlert.classList.remove("d-none", "alert-primary", "alert-success", "alert-danger");
+        generalAlert.classList.add(`alert-${type}`);
+        generalAlert.classList.add('d-block');
+
+        setTimeout(() => {
+          generalAlert.classList.remove('d-block');
+          generalAlert.classList.add("d-none");
+        }, 2500);
+      };
+
+      // Función de Utilidad: Control de Loading en el botón del modal
+      const setModalLoading = (isLoading) => {
+          btnRegistro.disabled = isLoading;
+          if (isLoading) {
+              btnRegistroText.textContent = 'Guardando...';
+              btnRegistroLoader.classList.remove('d-none');
+          } else {
+              btnRegistroText.textContent = 'Registrar Alumno';
+              btnRegistroLoader.classList.add('d-none');
+          }
+      }
+
+      // -----------------------------------------------------
+      // 1. OBTENER Y RENDERIZAR ALUMNOS
+      // -----------------------------------------------------
+
+      const obtenerAlumnos = async () => {
+        try {
+          const response = await fetch(API_ALUMNOS_URI, {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${API_TOKEN}`,
+            },
+          });
+
+          if (!response.ok) {
+            throw new Error(`Error en la solicitud: ${response.statusText} (${response.status})`);
+          }
+
+          const result = await response.json();
+          return result.data || [];
+        } catch (error) {
+          console.error("Hubo un error al obtener los alumnos:", error);
+          mostrarAlerta("No se pudo conectar con el servidor para obtener los alumnos.", "danger");
+          return [];
+        }
+      };
+
+      // Función para formatear la fecha
+      function formatFecha(dateString) {
+        if (!dateString) return "N/A";
+        const date = new Date(dateString);
+        return date.toLocaleDateString("es-ES", {
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+        });
+      }
+
+      // Función para obtener estado y estilos
+      const obtenerEstado = (estado = "") => {
+        const estadoLimpio = estado.toLowerCase().trim();
+        if (estadoLimpio === "activo") {
+          return { claseEstado: "text-success", estadoIcono: "✅" };
+        } else if (estadoLimpio === "inactivo") {
+          return { claseEstado: "text-danger", estadoIcono: "❌" };
+        } else {
+          return { claseEstado: "text-warning", estadoIcono: "⚠️" };
+        }
+      };
+
+      // Función principal para dibujar el grid
+      const renderAlumnos = (alumnosData) => {
+        alumnosGrid.innerHTML = ''; // Limpiar el grid
+
+        if (alumnosData.length === 0) {
+          alumnosGrid.innerHTML = '<div class="col-12"><p class="text-center text-muted fs-5 my-5">No hay alumnos registrados.</p></div>';
+          return;
+        }
+
+        alumnosData.forEach((alumno) => {
+          const card = document.createElement("div");
+          card.classList.add("col");
+
+          const { claseEstado, estadoIcono } = obtenerEstado(alumno.estado);
+
+          // URL de imagen de perfil: Usamos un placeholder si no hay URL o si falla.
+          const profileUrl = alumno.perfil && alumno.perfil.startsWith('http') 
+            ? alumno.perfil 
+            : `https://placehold.co/100x100/5598e0/ffffff?text=${alumno.nombre.charAt(0)}${alumno.apellidoPaterno.charAt(0)}`;
+          // Crear el contenido de la tarjeta con botón de Eliminar
+          card.innerHTML = `
+              <div class="card shadow-sm h-100 border-primary">
+                  <div class="card-body d-flex flex-column align-items-center text-center">
+                      <img 
+                        src="${profileUrl}" 
+                        class="profile-img" 
+                        alt="Foto de Perfil de ${alumno.nombre}"
+                        onerror="this.onerror=null; this.src='https://placehold.co/100x100/aaaaaa/ffffff?text=N/A';"
+                      >
+                      <h5 class="card-title text-primary">${alumno.nombre} ${alumno.apellidoPaterno}</h5>
+                      <h6 class="card-subtitle mb-2 text-muted">${alumno.carrera}</h6>
+                      <ul class="list-group list-group-flush w-100 text-start mt-2">
+                          <li class="list-group-item"><strong>Matrícula:</strong> ${alumno.matricula}</li>
+                          <li class="list-group-item"><strong>Semestre:</strong> ${alumno.semestre || 'N/A'}</li>
+                          <li class="list-group-item"><strong>Email:</strong> <a href="mailto:${alumno.email}">${alumno.email}</a></li>
+                          <li class="list-group-item"><strong>Ingreso:</strong> ${formatFecha(alumno.fechaIngreso)}</li>
+                          <li class="list-group-item"><strong>Estado:</strong> <span class="${claseEstado}"><strong>${estadoIcono} ${alumno.estado.toUpperCase()}</strong></span></li>
+                      </ul>
+                  </div>
+                  <div class="card-footer text-center">
+                      <a href="alumno/${alumno._id}" class="btn btn-sm btn-outline-primary me-2">Ver Detalles</a>
+                      <button data-id="${alumno._id}" class="btn btn-sm btn-danger eliminar-btn">Eliminar</button>
+                  </div>
+              </div>
+          `;
+          alumnosGrid.appendChild(card);
+        });
+
+        // Adjuntar event listeners para los botones de eliminar después de renderizar
+        document.querySelectorAll('.eliminar-btn').forEach(button => {
+            button.addEventListener('click', (e) => {
+                const id = e.currentTarget.dataset.id;
+                const nombre = e.currentTarget.closest('.card').querySelector('.card-title').textContent;
+                handleEliminarAlumno(id, nombre);
+            });
+        });
+      };
+
+      // -----------------------------------------------------
+      // 2. ELIMINAR ALUMNO
+      // -----------------------------------------------------
+
+      const handleEliminarAlumno = async (id, nombre) => {
+        if (!confirm(`¿Está seguro de que desea eliminar al alumno ${nombre}? Esta acción es irreversible.`)) {
+          return;
+        }
+
+        mostrarAlerta(`Eliminando a ${nombre}...`, 'warning');
+
+        try {
+          const response = await fetch(`${API_ALUMNOS_URI}/${id}`, {
+            method: "DELETE",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${API_TOKEN}`,
+            },
+          });
+
+          if (!response.ok) {
+            const error = await response.json().catch(() => ({ message: 'Error desconocido.' }));
+            throw new Error(error.message || `Error ${response.status}: No se pudo eliminar el alumno.`);
+          }
+
+          mostrarAlerta(`✅ Alumno ${nombre} eliminado con éxito.`, 'success');
+          // Recargar la lista
+          const alumnosActualizados = await obtenerAlumnos();
+          renderAlumnos(alumnosActualizados);
+
+        } catch (error) {
+          console.error("Error al eliminar alumno:", error);
+          mostrarAlerta(`❌ Error al eliminar a ${nombre}: ${error.message}`, 'danger');
+        }
+      };
+
+
+      // -----------------------------------------------------
+      // 3. REGISTRAR ALUMNO (Manejo del Modal)
+      // -----------------------------------------------------
+
+      formRegistro.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        
+        modalAlert.classList.add('d-none'); // Ocultar alerta del modal
+        formRegistro.classList.remove('was-validated');
+
+        if (!formRegistro.checkValidity()) {
+            formRegistro.classList.add('was-validated');
+            return;
+        }
+
+        setModalLoading(true);
+
+        const newAlumnoData = {
+            nombre: document.getElementById('regNombre').value.trim(),
+            apellidoPaterno: document.getElementById('regApellido').value.trim(),
+            email: document.getElementById('regEmail').value.trim(),
+            carrera: document.getElementById('regCarrera').value.trim(),
+            // Añadir campos por defecto para simular un registro completo
+            semestre: 1, 
+            telefono: 'N/A',
+            perfil: '',
+            fechaIngreso: new Date().toISOString(),
+            estado: 'activo' 
+        };
+
+        try {
+            const response = await fetch(API_ALUMNOS_URI, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${API_TOKEN}`,
+                },
+                body: JSON.stringify(newAlumnoData),
+            });
+
+            if (!response.ok) {
+                const error = await response.json().catch(() => ({ message: 'Error desconocido.' }));
+                throw new Error(error.message || `Error ${response.status}: No se pudo registrar el alumno.`);
+            }
+
+            // Éxito
+            mostrarAlerta(`✅ Alumno ${newAlumnoData.nombre} registrado con éxito.`, 'success');
+            formRegistro.reset();
+            formRegistro.classList.remove('was-validated');
+            modalBootstrap.hide(); // Cerrar el modal
+
+            // Recargar la lista
+            const alumnosActualizados = await obtenerAlumnos();
+            renderAlumnos(alumnosActualizados);
+
+        } catch (error) {
+            console.error("Error al registrar alumno:", error);
+            // Mostrar error dentro del modal
+            modalAlert.textContent = `❌ Error: ${error.message}`;
+            modalAlert.classList.remove('d-none', 'alert-primary', 'alert-success');
+            modalAlert.classList.add('alert-danger');
+            
+        } finally {
+            setModalLoading(false);
+        }
+      });
+
+      // -----------------------------------------------------
+      // 4. INICIO DE LA APLICACIÓN
+      // -----------------------------------------------------
+
+      document.addEventListener("DOMContentLoaded", async () => {
+        // Cargar y renderizar alumnos al inicio
+        const alumnosData = await obtenerAlumnos();
+        renderAlumnos(alumnosData);
+      });
+    </script>
   </body>
 </html>

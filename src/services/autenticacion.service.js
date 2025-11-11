@@ -52,10 +52,7 @@ class AutenticacionService {
 
       // Simular comparación de contraseñas "encriptadas"
       // En la práctica se usaría bcrypt.compare(pass, usuario.password)
-      const contrasenaValida = this._simularComparacionPassword(
-        password,
-        usuario.password
-      );
+      const contrasenaValida = await usuario.compararPassword(password);
 
       if (!contrasenaValida) {
         return { error: "Contraseña incorrecta" };
@@ -180,7 +177,7 @@ class AutenticacionService {
     const payload = {
       id: usuario.id,
       email: usuario.email,
-      rol: usuario.rol.nombre || "usuario",
+      rol: usuario.rol.nombre,
       emitidoEn: new Date().toISOString(),
     };
 

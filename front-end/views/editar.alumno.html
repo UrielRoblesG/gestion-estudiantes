@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <title>Editar Perfil</title>
+    <!-- Required meta tags -->
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+
+    <!-- Bootstrap CSS v5.3.2 -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      crossorigin="anonymous"
+    />
+
+    <style>
+      body {
+        background-color: #f8f9fa;
+        font-family: 'Inter', sans-serif;
+      }
+      .edit-card {
+        margin-top: 30px;
+        margin-bottom: 50px;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        border-radius: 10px;
+      }
+      .card-header {
+        border-radius: 10px 10px 0 0 !important;
+      }
+      .profile-preview {
+        width: 100px;
+        height: 100px;
+        object-fit: cover;
+        border-radius: 50%;
+        border: 3px solid #0d6efd;
+      }
+      /* Estilo para los badges eliminables */
+      .materia-badge {
+          display: inline-flex;
+          align-items: center;
+          margin-right: 8px;
+          margin-bottom: 8px;
+          padding: 6px 10px;
+          border-radius: 8px;
+          font-size: 0.9rem;
+      }
+      .materia-badge .btn-close {
+          margin-left: 8px;
+          font-size: 0.7rem;
+          opacity: 0.7;
+      }
+      .materia-badge .btn-close:hover {
+          opacity: 1;
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- Navbar simple para simular la inclusión de scripts/navbar.js -->
+    <header>
+      <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
+        <div class="container">
+          <a class="navbar-brand fw-bold" href="/admin/home">Gestión Admin</a>
+          <span class="navbar-text text-white-50" id="page-title">Cargando...</span>
+        </div>
+      </nav>
+    </header>
+
+    <main>
+      <div class="container">
+        <div class="row justify-content-center">
+          <div class="col-lg-10">
+            <div class="card edit-card">
+              <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Formulario de Edición de Perfil</h5>
+              </div>
+              <div class="card-body">
+                
+                <!-- Mensaje de Estado (Éxito/Error) -->
+                <div id="status-message" class="alert d-none" role="alert"></div>
+
+                <form id="formEditarAlumno" class="needs-validation" novalidate>
+                  <!-- Campo ID (oculto, solo para referencia) -->
+                  <input type="hidden" id="inputId" name="id" />
+
+                  <!-- Sección de Datos Personales -->
+                  <h6 class="border-bottom pb-2 mb-3 text-primary">Datos Personales</h6>
+                  <div class="row g-3">
+                    <div class="col-md-6">
+                      <label for="inputNombre" class="form-label">Nombre</label>
+                      <input type="text" class="form-control" id="inputNombre" required />
+                      <div class="invalid-feedback">El nombre es obligatorio.</div>
+                    </div>
+                    <div class="col-md-6">
+                      <label for="inputApellidoPaterno" class="form-label">Apellido Paterno</label>
+                      <input type="text" class="form-control" id="inputApellidoPaterno" required />
+                      <div class="invalid-feedback">El apellido paterno es obligatorio.</div>
+                    </div>
+                  </div>
+
+                  <h6 class="border-bottom pb-2 mb-3 mt-4 text-primary">Contacto</h6>
+                  <div class="row g-3">
+                    <div class="col-md-6">
+                      <label for="inputEmail" class="form-label">Email</label>
+                      <input type="email" class="form-control" id="inputEmail" required />
+                      <div class="invalid-feedback">Introduce un email válido.</div>
+                    </div>
+                    <div class="col-md-6">
+                      <label for="inputTelefono" class="form-label">Teléfono</label>
+                      <input type="text" class="form-control" id="inputTelefono" />
+                    </div>
+                  </div>
+
+                  <h6 class="border-bottom pb-2 mb-3 mt-4 text-primary">Información Académica</h6>
+                  <div class="row g-3">
+                    <div class="col-md-4">
+                      <label for="inputCarreraPrograma" class="form-label">Carrera/Programa</label>
+                      <input type="text" class="form-control" id="inputCarreraPrograma" required />
+                      <div class="invalid-feedback">La carrera es obligatoria.</div>
+                    </div>
+                    <div class="col-md-4">
+                      <label for="inputSemestre" class="form-label">Semestre</label>
+                      <input type="number" class="form-control" id="inputSemestre" min="1" required />
+                      <div class="invalid-feedback">El semestre es obligatorio.</div>
+                    </div>
+                    <div class="col-md-4">
+                      <label for="inputEstado" class="form-label">Estado</label>
+                      <select class="form-select" id="inputEstado" required>
+                        <option value="activo">Activo</option>
+                        <option value="inactivo">Inactivo</option>
+                        <option value="egreso">Egreso</option>
+                      </select>
+                      <div class="invalid-feedback">El estado es obligatorio.</div>
+                    </div>
+                  </div>
+                  
+                  <h6 class="border-bottom pb-2 mb-3 mt-4 text-primary">Foto de Perfil</h6>
+                  <div class="row g-3 align-items-center">
+                    <div class="col-md-8">
+                      <label for="inputPerfil" class="form-label">URL de Foto de Perfil</label>
+                      <input type="url" class="form-control" id="inputPerfil" placeholder="https://ejemplo.com/foto.jpg" />
+                    </div>
+                    <div class="col-md-4 text-center">
+                      <label class="form-label d-block">Previsualización</label>
+                      <img 
+                        id="profilePreviewImg" 
+                        src="https://placehold.co/100x100/aaaaaa/ffffff?text=N/A" 
+                        alt="Foto de Perfil" 
+                        class="profile-preview"
+                      />
+                    </div>
+                  </div>
+                  
+                  <!-- Materias Inscritas (Ahora editable con badges) -->
+                  <h6 class="border-bottom pb-2 mb-3 mt-4 text-primary">Materias Inscritas</h6>
+                  
+                  <div class="input-group mb-3">
+                      <input type="text" class="form-control" id="inputNuevaMateria" placeholder="Escribe el nombre de la materia" />
+                      <button class="btn btn-outline-secondary" type="button" id="btnAddMateria">Añadir</button>
+                  </div>
+                  
+                  <div id="materiasContainer" class="d-flex flex-wrap border rounded p-2 mb-3 bg-light">
+                      <!-- Aquí se insertarán los badges de materias -->
+                      <span class="text-muted fst-italic">Añade una materia arriba.</span>
+                  </div>
+
+
+                  <div class="d-flex justify-content-end mt-4 pt-3 border-top">
+                    <a href="#" id="btnCancelar" class="btn btn-secondary me-2">Cancelar</a>
+                    <button type="submit" id="btnGuardar" class="btn btn-primary d-flex align-items-center">
+                      <span id="button-text">Guardar Cambios</span>
+                      <div id="loader" class="spinner-border spinner-border-sm ms-3 d-none" role="status">
+                        <span class="visually-hidden">Cargando...</span>
+                      </div>
+                    </button>
+                  </div>
+                </form>
+
+              </div>
+              <div class="card-footer text-muted text-center">
+                  Última revisión: <span id="last-update">N/A</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Bootstrap JavaScript Libraries -->
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+      crossorigin="anonymous"
+    ></script>
+
+    <script>
+      // Token (hardcodeado según tu script)
+      const API_TOKEN =
+        "eyJpZCI6IjY5MGJmNzQ3NDdjYzc2ZmU3NzIwZmQ3YSIsImVtYWlsIjoiYWRtaW5AY29ycmVvLmNvbSIsInJvbCI6IkFETUlOIiwiZW1pdGlkb0VuIjoiMjAyNS0xMS0xMVQxNjowMTozNC45NDFaIn0=";
+      const API_BASE_URI = "/api/alumnos";
+      
+      // Referencias del DOM
+      const formEditarAlumno = document.getElementById('formEditarAlumno');
+      const statusMessage = document.getElementById('status-message');
+      const btnGuardar = document.getElementById('btnGuardar');
+      const btnCancelar = document.getElementById('btnCancelar');
+      const buttonText = document.getElementById('button-text');
+      const loader = document.getElementById('loader');
+      const profilePreviewImg = document.getElementById('profilePreviewImg');
+      const inputPerfil = document.getElementById('inputPerfil');
+
+      // Nuevas referencias para la gestión de materias
+      const inputNuevaMateria = document.getElementById('inputNuevaMateria');
+      const btnAddMateria = document.getElementById('btnAddMateria');
+      const materiasContainer = document.getElementById('materiasContainer');
+
+      let currentAlumnoId = null;
+      let currentMaterias = []; // Nuevo estado para las materias inscritas
+
+
+      /**
+       * Función para formatear la fecha a un formato más legible.
+       */
+      function formatFecha(dateString) {
+        if (!dateString) return "N/A";
+        try {
+          const date = new Date(dateString);
+          return date.toLocaleDateString("es-ES", {
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+          });
+        } catch (e) {
+          return "Fecha inválida";
+        }
+      }
+      
+      /**
+       * Muestra un mensaje de estado en la UI.
+       */
+      function displayStatus(message, type) {
+          statusMessage.textContent = message;
+          statusMessage.classList.remove('d-none', 'alert-danger', 'alert-success', 'alert-warning');
+          statusMessage.classList.add(`alert-${type}`);
+          statusMessage.classList.add('d-block');
+          
+          setTimeout(() => {
+            statusMessage.classList.remove('d-block');
+            statusMessage.classList.add('d-none');
+          }, 3000);
+      }
+
+      /**
+       * Habilita o deshabilita el botón de envío y muestra/oculta el loader.
+       */
+      function setFormLoading(isLoading) {
+          btnGuardar.disabled = isLoading;
+          btnCancelar.disabled = isLoading;
+          if (isLoading) {
+              buttonText.textContent = 'Guardando...';
+              loader.classList.remove('d-none');
+          } else {
+              buttonText.textContent = 'Guardar Cambios';
+              loader.classList.add('d-none');
+          }
+      }
+      
+      /**
+       * Obtiene los datos de un alumno por ID.
+       */
+      const obtenerAlumno = async (id = "") => {
+        try {
+          const uri = `${API_BASE_URI}/${id}`;
+          const response = await fetch(uri, {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${API_TOKEN}`,
+            },
+          });
+
+          if (!response.ok) {
+            const errorData = await response.json().catch(() => ({ message: 'Error desconocido.' }));
+            throw new Error(
+              `Error ${response.status}: ${errorData.message || 'Fallo al obtener datos.'}`
+            );
+          }
+
+          const decodedData = await response.json();
+          return decodedData.data;
+        } catch (error) {
+          console.error("Error al obtener el alumno:", error);
+          displayStatus(`Error al cargar los datos: ${error.message || 'Error de conexión.'}`, 'danger');
+          return null;
+        }
+      };
+
+      /**
+       * Rellena el formulario con los datos del alumno.
+       */
+      const poblarFormulario = (alumno) => {
+          document.getElementById('inputId').value = alumno._id || '';
+          document.getElementById('inputNombre').value = alumno.nombre || '';
+          document.getElementById('inputApellidoPaterno').value = alumno.apellidoPaterno || '';
+          document.getElementById('inputEmail').value = alumno.email || '';
+          document.getElementById('inputTelefono').value = alumno.telefono || '';
+          document.getElementById('inputCarreraPrograma').value = alumno.carrera || '';
+          document.getElementById('inputSemestre').value = alumno.semestre || '';
+          document.getElementById('inputEstado').value = alumno.estado || 'Activo';
+          document.getElementById('inputPerfil').value = alumno.perfil || '';
+          
+          document.getElementById('page-title').textContent = `Editar: ${alumno.nombre} ${alumno.apellidoPaterno}`;
+          document.getElementById('last-update').textContent = formatFecha(Date.now());
+          
+          // Previsualización de imagen
+          updateProfilePreview(alumno.perfil);
+          
+          // Inicializar el estado de las materias y renderizar
+          currentMaterias = (alumno.materiasInscritas && Array.isArray(alumno.materiasInscritas)) ? [...alumno.materiasInscritas] : [];
+          renderMaterias();
+
+          // Botón de cancelar redirige a la vista de detalles
+          btnCancelar.href = `/admin/alumno/${alumno._id}`;
+      };
+
+      /**
+       * Actualiza la imagen de previsualización.
+       */
+      const updateProfilePreview = (url) => {
+          const defaultPlaceholder = 'https://placehold.co/100x100/aaaaaa/ffffff?text=N/A';
+          
+          if (url && url.startsWith('http')) {
+              profilePreviewImg.src = url;
+              // Si la carga falla, vuelve al placeholder
+              profilePreviewImg.onerror = () => {
+                  profilePreviewImg.src = defaultPlaceholder;
+                  profilePreviewImg.onerror = null; // Evitar loop infinito
+              };
+          } else {
+              profilePreviewImg.src = defaultPlaceholder;
+          }
+      };
+      
+      // -----------------------------------------------------
+      // LÓGICA DE GESTIÓN DE MATERIAS (BADGES)
+      // -----------------------------------------------------
+
+      /**
+       * Renderiza el array de materias 
+       */
+      const renderMaterias = () => {
+          materiasContainer.innerHTML = '';
+          
+          if (currentMaterias.length === 0) {
+              materiasContainer.innerHTML = '<span class="text-muted fst-italic">Añade una materia arriba.</span>';
+              return;
+          }
+
+          currentMaterias.forEach(materia => {
+              const badge = document.createElement('span');
+              badge.className = 'badge text-bg-info materia-badge';
+              badge.textContent = materia;
+              
+              const closeButton = document.createElement('button');
+              closeButton.type = 'button';
+              closeButton.className = 'btn-close';
+              closeButton.setAttribute('aria-label', `Eliminar ${materia}`);
+              
+              // Event listener para eliminar la materia
+              closeButton.addEventListener('click', () => removeMateria(materia));
+              
+              badge.appendChild(closeButton);
+              materiasContainer.appendChild(badge);
+          });
+      };
+      
+      /**
+       * Añade una materia al array de materias.
+       */
+      const addMateria = () => {
+          const nuevaMateria = inputNuevaMateria.value.trim();
+          
+          if (nuevaMateria.length > 0) {
+              // Convertir a minúsculas para chequear duplicados sin ser case-sensitive
+              const lowerNuevaMateria = nuevaMateria.toLowerCase();
+              
+              // Verificar duplicados
+              const isDuplicate = currentMaterias.some(m => m.toLowerCase() === lowerNuevaMateria);
+              
+              if (!isDuplicate) {
+                  currentMaterias.push(nuevaMateria);
+                  renderMaterias();
+                  inputNuevaMateria.value = ''; // Limpiar el input
+                  inputNuevaMateria.focus();
+              } else {
+                  displayStatus(`La materia "${nuevaMateria}" ya está en la lista.`, 'warning');
+              }
+          }
+      };
+      
+      /**
+       * Elimina una materia del array de materias.
+       */
+      const removeMateria = (materia) => {
+          // Filtrar el array para eliminar la primera coincidencia exacta
+          const index = currentMaterias.indexOf(materia);
+          if (index > -1) {
+              currentMaterias.splice(index, 1);
+              renderMaterias();
+          }
+      };
+      
+      // Manejador de click para añadir materia
+      btnAddMateria.addEventListener('click', addMateria);
+      
+      // Manejador de tecla Enter en el input para añadir materia
+      inputNuevaMateria.addEventListener('keypress', (event) => {
+          if (event.key === 'Enter') {
+              event.preventDefault(); // Prevenir el envío del formulario
+              addMateria();
+          }
+      });
+
+      /**
+       * Manejador de envío del formulario (PUT request).
+       */
+      formEditarAlumno.addEventListener('submit', async (event) => {
+          event.preventDefault();
+          event.stopPropagation();
+          
+          if (!formEditarAlumno.checkValidity()) {
+              formEditarAlumno.classList.add('was-validated');
+              return;
+          }
+          
+          setFormLoading(true);
+          displayStatus('Guardando cambios...', 'warning');
+
+          const alumnoId = document.getElementById('inputId').value;
+          
+          // Recolectar datos del formulario
+          const updatedData = {
+              _id: alumnoId,
+              nombre: document.getElementById('inputNombre').value.trim(),
+              apellidoPaterno: document.getElementById('inputApellidoPaterno').value.trim(),
+              email: document.getElementById('inputEmail').value.trim(),
+              telefono: document.getElementById('inputTelefono').value.trim(),
+              carreraPrograma: document.getElementById('inputCarreraPrograma').value.trim(),
+              semestre: parseInt(document.getElementById('inputSemestre').value, 10),
+              estado: document.getElementById('inputEstado').value,
+              perfil: document.getElementById('inputPerfil').value.trim(),
+              // ¡NUEVO!: Incluir el array de materias
+              materiasInscritas: currentMaterias 
+          };
+
+          try {
+              const response = await fetch(`${API_BASE_URI}/${alumnoId}`, {
+                  method: "PUT",
+                  headers: {
+                      "Content-Type": "application/json",
+                      Authorization: `Bearer ${API_TOKEN}`,
+                  },
+                  body: JSON.stringify(updatedData),
+              });
+
+              if (!response.ok) {
+                  const error = await response.json().catch(() => ({ message: 'Error desconocido.' }));
+                  throw new Error(error.message || `Error ${response.status}: No se pudo actualizar el perfil.`);
+              }
+              
+              // Éxito
+              displayStatus('Perfil actualizado con éxito.', 'success');
+              
+              // Redirigir a la vista de detalles después de un breve momento
+              setTimeout(() => {
+                  window.location.href = `/admin/alumno/${alumnoId}`;
+              }, 1500);
+
+          } catch (error) {
+              console.error("Error al actualizar perfil:", error);
+              displayStatus(`Error al guardar: ${error.message}`, 'danger');
+          } finally {
+              setFormLoading(false);
+              document.getElementById('last-update').textContent = formatFecha(Date.now());
+          }
+      });
+      
+      // Listener para previsualización de imagen
+      inputPerfil.addEventListener('input', () => {
+          updateProfilePreview(inputPerfil.value);
+      });
+
+      // -----------------------------------------------------
+      // LÓGICA DE INICIO
+      // -----------------------------------------------------
+      document.addEventListener("DOMContentLoaded", async () => {
+        // Obtener el ID desde la URL (ej: /admin/alumno/editar/ID)
+        const partesPath = window.location.pathname.split("/");
+        // El ID debería ser el último segmento
+        const alumnoId = partesPath[partesPath.length - 1]; 
+        currentAlumnoId = alumnoId;
+        
+        if (!alumnoId || alumnoId === 'editar') {
+            return displayStatus("ID de alumno no especificado en la URL. No se puede editar.", 'danger');
+        }
+
+        displayStatus('Cargando datos del alumno...', 'warning');
+        const alumno = await obtenerAlumno(alumnoId);
+        
+        if (alumno) {
+          poblarFormulario(alumno);
+          statusMessage.classList.add('d-none'); // Ocultar mensaje de carga
+        } else {
+            // Error manejado dentro de obtenerAlumno, solo aseguramos que el formulario esté deshabilitado
+            formEditarAlumno.style.pointerEvents = 'none';
+        }
+      });
+    </script>
+  </body>
+</html>

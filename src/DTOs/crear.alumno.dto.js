@@ -55,6 +55,7 @@ export const crearAlumnoDTO = checkSchema({
     },
   },
   semestre: {
+    default: 1,
     isInt: {
       options: { min: 1, errorMessage: 'El valor del semestre no es valido.', },
     },

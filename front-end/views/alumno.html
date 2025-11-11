@@ -1,7 +1,7 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
   <head>
-    <title>Ver alumno</title>
+    <title>Ver Alumno</title>
     <!-- Required meta tags -->
     <meta charset="utf-8" />
     <meta
@@ -9,38 +9,267 @@
       content="width=device-width, initial-scale=1, shrink-to-fit=no"
     />
 
-    <!-- Bootstrap CSS v5.2.1 -->
+    <!-- Bootstrap CSS v5.3.2 -->
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
       rel="stylesheet"
-      integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
       crossorigin="anonymous"
     />
+
+    <style>
+      body {
+        background-color: #f8f9fa;
+        font-family: 'Inter', sans-serif;
+      }
+      .profile-img {
+        width: 150px;
+        height: 150px;
+        object-fit: cover;
+        border-radius: 50%;
+        border: 5px solid #0d6efd;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      }
+      .profile-card {
+        margin-top: 50px;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        border-radius: 10px;
+      }
+      .card-header {
+        border-radius: 10px 10px 0 0 !important;
+      }
+      .badge-activo {
+        background-color: #28a745; /* Success Green */
+        color: white;
+        padding: 5px 10px;
+        border-radius: 5px;
+      }
+      .badge-inactivo {
+        background-color: #dc3545; /* Danger Red */
+        color: white;
+        padding: 5px 10px;
+        border-radius: 5px;
+      }
+    </style>
   </head>
 
   <body>
+    <!-- Navbar simple para simular la inclusión de scripts/navbar.js -->
     <header>
-      <!-- place navbar here -->
+      <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
+        <div class="container">
+          <a class="navbar-brand fw-bold" href="/admin/home">Gestión Admin</a>
+          <span class="navbar-text text-white-50">Vista de Alumno</span>
+        </div>
+      </nav>
     </header>
+
     <main>
       <div class="container" id="alumno-info">
-        <!-- Contenido a generar dinamicamente en base a la obtencion de fetch -->
-
+        <!-- Contenido de la ficha del alumno o mensaje de carga/error -->
+        <p class="text-center text-muted mt-5">Cargando información del alumno...</p>
       </div>
     </main>
+
     <!-- Bootstrap JavaScript Libraries -->
     <script
-      src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
-      integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
       crossorigin="anonymous"
     ></script>
 
-    <script
-      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"
-      integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+"
-      crossorigin="anonymous"
-    ></script>
-    <script src="/scripts/navbar.js"></script>
-    <script src="/scripts/alumno.js"></script>
+    <script>
+      // Token (hardcodeado según tu script)
+      const API_TOKEN =
+        "eyJpZCI6IjY5MGJmNzQ3NDdjYzc2ZmU3NzIwZmQ3YSIsImVtYWlsIjoiYWRtaW5AY29ycmVvLmNvbSIsInJvbCI6IkFETUlOIiwiZW1pdGlkb0VuIjoiMjAyNS0xMS0xMVQxNjowMTozNC45NDFaIn0=";
+
+      /**
+       * Obtiene los datos de un alumno por ID.
+       * @param {string} id - ID del alumno.
+       * @returns {Promise<Object|null>} Datos del alumno o null si hay error.
+       */
+      const obtenerAlumno = async (id = "") => {
+        try {
+          const uri = `/api/alumnos/${id}`;
+          const response = await fetch(uri, {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${API_TOKEN}`,
+            },
+          });
+
+          if (response.status === 404) {
+             throw new Error("Alumno no encontrado (404).");
+          }
+
+          if (!response.ok) {
+            const errorData = await response.json().catch(() => ({ message: 'Error desconocido.' }));
+            throw new Error(
+              `Error en la solicitud: ${response.statusText} (${response.status}). Mensaje: ${errorData.message || 'Fallo al obtener datos.'}`
+            );
+          }
+
+          const decodedData = await response.json();
+          return decodedData.data;
+        } catch (error) {
+          console.error("Error al obtener el alumno:", error);
+          return null;
+        }
+      };
+
+      /**
+       * Función para formatear la fecha a un formato más legible.
+       * @param {string} dateString - Cadena de fecha ISO.
+       * @returns {string} Fecha formateada o "N/A".
+       */
+      function formatFecha(dateString) {
+        if (!dateString) return "N/A";
+        try {
+          const date = new Date(dateString);
+          return date.toLocaleDateString("es-ES", {
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+          });
+        } catch (e) {
+          return "Fecha inválida";
+        }
+      }
+
+      /**
+       * Renderiza el contenido de la ficha del alumno en el DOM.
+       * @param {Object} alumno - Objeto con los datos del alumno.
+       */
+      const renderAlumno = (alumno) => {
+        const alumnoInfo = document.getElementById("alumno-info");
+        
+        // Determinar la clase para el badge de estado
+        const estadoLimpio = alumno.estado ? alumno.estado.toLowerCase().trim() : 'n/a';
+        const badgeClass = estadoLimpio === 'activo' ? 'badge-activo' : 
+                           estadoLimpio === 'inactivo' ? 'badge-inactivo' : 'text-bg-warning';
+        
+        // Placeholder para la imagen si no existe
+        const profileUrl = alumno.perfil && alumno.perfil.startsWith('http') 
+            ? alumno.perfil 
+            : `https://placehold.co/150x150/5598e0/ffffff?text=${alumno.nombre.charAt(0)}${alumno.apellidoPaterno.charAt(0)}`;
+            
+        // Materias: Asegurar que es un array y tiene contenido
+        const materiasHtml = (alumno.materiasInscritas && Array.isArray(alumno.materiasInscritas) && alumno.materiasInscritas.length > 0)
+            ? alumno.materiasInscritas.map(m => `<span class="badge text-bg-secondary me-2">${m}</span>`).join('\n')
+            : '<p class="text-muted fst-italic">No hay materias inscritas.</p>';
+
+        alumnoInfo.innerHTML = `
+          <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card profile-card">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">Información Detallada del Alumno</h5>
+                    </div>
+
+                    <div class="card-body">
+                        <div class="row align-items-center mb-4 pb-3 border-bottom">
+                            <div class="col-md-3 text-center">
+                                <img
+                                    src="${profileUrl}"
+                                    alt="Foto de Perfil"
+                                    class="img-fluid profile-img"
+                                    onerror="this.onerror=null; this.src='https://placehold.co/150x150/aaaaaa/ffffff?text=N/A';"
+                                />
+                            </div>
+                            <div class="col-md-9">
+                                <h2 class="card-title text-primary mb-1">${alumno.nombre || 'N/A'} ${alumno.apellidoPaterno || 'N/A'}</h2>
+                                <h5 class="card-subtitle mb-2 text-muted">
+                                    Matrícula: <strong>${alumno.matricula || 'N/A'}</strong>
+                                </h5>
+                                <span class="${badgeClass}">${(alumno.estado || 'N/A').toUpperCase()}</span>
+                                <p class="card-text mt-2 small text-muted">
+                                    ID Único: ${alumno._id}
+                                </p>
+                            </div>
+                        </div>
+
+                        <h5 class="border-bottom pb-2 mb-3 text-primary">
+                            Detalles Académicos y Contacto
+                        </h5>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <p class="mb-1"><strong>Programa:</strong> ${alumno.carrera || 'N/A'}</p>
+                                <p class="mb-1"><strong>Semestre:</strong> ${alumno.semestre || 'N/A'}</p>
+                                <p class="mb-1"><strong>Ingreso:</strong> ${formatFecha(alumno.fechaIngreso)}</p>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <p class="mb-1"><strong>Email:</strong> <a href="mailto:${alumno.email}" class="text-decoration-none">${alumno.email || 'N/A'}</a></p>
+                                <p class="mb-1"><strong>Teléfono:</strong> ${alumno.telefono || 'N/A'}</p>
+                            </div>
+                        </div>
+
+                        <h5 class="border-bottom pb-2 mb-3 text-primary mt-4">
+                            Materias Inscritas
+                        </h5>
+                        <div class="d-flex flex-wrap">
+                            ${materiasHtml}
+                        </div>
+                        
+
+                        <div class="text-end mt-4 pt-3 border-top">
+                            <a href="/admin/alumno/editar/${alumno._id}" class="btn btn-outline-primary me-2"
+                                >Editar Perfil</a
+                            >
+                            <a href="/admin/alumno/historial/${alumno._id}" class="btn btn-outline-danger"
+                                >Ver Historial</a
+                            >
+                        </div>
+                    </div>
+
+                    <div class="card-footer text-muted text-center">
+                        Última revisión del sistema: ${formatFecha(Date.now())}
+                    </div>
+                </div>
+            </div>
+          </div>
+        `;
+      };
+      
+      /**
+       * Renderiza un mensaje de error o alumno no encontrado.
+       * @param {string} msg - Mensaje a mostrar.
+       */
+      const renderError = (msg) => {
+        const alumnoInfo = document.getElementById("alumno-info");
+        alumnoInfo.innerHTML = `
+            <div class="alert alert-danger mt-5 text-center" role="alert">
+                <h4 class="alert-heading">¡Error al Cargar!</h4>
+                <p>${msg}</p>
+                <hr>
+                <p class="mb-0">Por favor, verifica el ID o intenta de nuevo más tarde.</p>
+                <a href="/admin/home" class="btn btn-danger btn-sm mt-2">Volver al Panel de Alumnos</a>
+            </div>
+        `;
+      }
+
+
+      // -----------------------------------------------------
+      // LÓGICA DE INICIO
+      // -----------------------------------------------------
+      document.addEventListener("DOMContentLoaded", async () => {
+        // Obtener el ID desde la URL (ej: /alumno/123)
+        const partesPath = window.location.pathname.split("/");
+        // El ID debería ser el último segmento si la URL es /admin/alumno/ID
+        const alumnoId = partesPath[partesPath.length - 1]; 
+        
+        if (!alumnoId || alumnoId === 'alumno' || alumnoId === 'admin') {
+            return renderError("ID de alumno no especificado en la URL.");
+        }
+
+        const alumno = await obtenerAlumno(alumnoId);
+        
+        if (alumno) {
+          renderAlumno(alumno);
+        } else {
+            // Manejador genérico para errores de fetch o alumno no encontrado
+            renderError(`No se pudo obtener la información del alumno con ID: ${alumnoId}.`);
+        }
+      });
+    </script>
   </body>
 </html>

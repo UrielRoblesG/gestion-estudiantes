@@ -1,4 +1,6 @@
 
+import UsuarioModel from '../Models/usuario.model.js';
+import RolModel from '../Models/rol.model.js';
 /**
  * @module UsuarioRepository
  * @description
@@ -8,13 +10,17 @@
 class UsuarioRepository {
 
   async agregarUsuario(usuarioData) {
+    const nuevoUsuario = new UsuarioModel(usuarioData);
 
+    return await nuevoUsuario.save();
   }
 
   async buscarPorEmail(email) {
+    return await UsuarioModel.findOne({email: email}).populate('rol');
   }
 
   async buscarRolPorNombre(rol = '') {
+    return await RolModel.findOne({nombre: rol});
   }
 }
 

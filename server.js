@@ -14,12 +14,13 @@ import { requestLogs } from "./src/middlewares/request.logs.js";
 import { fileLogger } from "./src/middlewares/file.logger.js";
 import { handleServerErrors } from "./src/middlewares/handle.server.errors.js";
 import configService from "./src/utils/config.service.js";
-
+import database from './src/config/database.js';
 
 import cors from 'cors';
 
 const app = express();
 
+database.conectar();
 
 // Archivos estaticos
 app.use(express.static('public'));
@@ -67,6 +68,7 @@ app.use('/api/autenticacion', autenticacionRoute);
 
 //* Rutas de las vistas
 app.use(authViewRoutes);
+
 app.use('/admin',adminViewRoutes);
 // Aqui van los middlewares de manejo de errores
 app.use(handleServerErrors);
