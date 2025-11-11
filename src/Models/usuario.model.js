@@ -17,7 +17,7 @@ const UsuarioSchema = new Schema({
         type: String,
         required : true
     },
-    years : {
+    edad : {
         type: Number,
         required: true
     },

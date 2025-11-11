@@ -34,7 +34,7 @@ export const Rutas = Object.freeze({
      */
     Auth : {
         '/login' : `${rutaRaizProyecto}/front-end/views/login.html`,
-        '/registro' : `${rutaRaizProyecto}/front-end/views/registro.html`
+        '/registro' : `${rutaRaizProyecto}/front-end/views/registro_form_plantilla.html`
     },
     Coordinador : {
         '/coordinador/home' : ``,

@@ -60,6 +60,11 @@ export const registroDTO = checkSchema({
             errorMessage: 'La contraseña no puede ser mayor a 16 ni menor a 8 caracteres'
         }
     },
+    edad: {
+        notEmpty: {
+            errorMessage: 'La edad es obligatoria'
+        },
+    },
     rol : {
         isIn: {
             options: [Roles.ADMIN, Roles.COORDINADOR],

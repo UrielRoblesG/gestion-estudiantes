@@ -104,7 +104,7 @@ class AutenticacionService {
   async registrarUsuario(nuevoUsuarioDto) {
     try {
 
-      const {email, password, nombre, rol } = nuevoUsuarioDto;
+      const {email, password, nombre, rol, edad } = nuevoUsuarioDto;
 
       const usuarioExiste = await usuarioRepository.buscarPorEmail(email.toLowerCase());
 
@@ -124,6 +124,7 @@ class AutenticacionService {
         email : email,
         password : password,
         nombre : nombre,
+        edad: edad,
         rol: rolUsuario._id
       };
 

@@ -87,7 +87,7 @@
       <div class="col-12 col-md-6 mx-auto">
         <p class="title text-center">Crea una cuenta</p>
         <div class="align-middle">
-
+          <div id="status-message-container" class="mb-3"></div>
           <div class="card p-3 shadow-lg " style="width: 100%;">
             <form id="formRegistro" class="g-3 needs-validation" novalidate>
               <div class="d-grid gap-2">
@@ -171,8 +171,11 @@
                 </div>
 
                 <div class="d-grid">
-                  <button type="submit" class="btn btn-success">
-                    Crear cuenta
+                  <button type="submit" id="btnSubmit" class="btn btn-success d-flex align-items-center justify-content-center">
+                    <span id="button-text">Crear cuenta</span>
+                    <div id="loader" class="spinner-border spinner-border-sm ms-2 d-none" role="status">
+                        <span class="visually-hidden">Cargando...</span>
+                    </div>
                   </button>
                 </div>
 
@@ -192,21 +195,22 @@
     </div>
     </div>
 
-    <div class="modal fade" id="accModal" tabindex="-1" aria-labelledby="accModalLabel" aria-hidden="true">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h1 class="modal-title fs-5" id="accModalLabel">Cuenta creada</h1>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body" id="acc-modal-body"></div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-            <button type="button" class="btn btn-primary">Ingresar</button>
-          </div>
-        </div>
-      </div>
+    <!-- Se mantiene el modal, pero su lógica de uso es reemplazada en el script -->
+  <div class="modal fade" id="accModal" tabindex="-1" aria-labelledby="accModalLabel" aria-hidden="true">
+   <div class="modal-dialog">
+    <div class="modal-content">
+     <div class="modal-header">
+      <h1 class="modal-title fs-5" id="accModalLabel">Cuenta creada</h1>
+      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+     </div>
+     <div class="modal-body" id="acc-modal-body"></div>
+     <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+      <button type="button" class="btn btn-primary" id="modal-login-redirect">Ingresar</button>
+     </div>
     </div>
+   </div>
+</div>
 
   </main>
   <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
@@ -231,6 +235,12 @@
       const passwordProgressBar = document.getElementById("passwordProgressBar");
       const inputPasswordConfirm = document.getElementById("passwordConfirmInput");
       const formAccount = document.getElementById("formRegistro");
+
+      const btnSubmit = document.getElementById("btnSubmit");
+      const buttonText = document.getElementById("button-text");
+      const loader = document.getElementById("loader");
+      const statusMessageContainer = document.getElementById("status-message-container");
+
       const regexPatterns = {
         name: /^[a-zA-Z\s]{1,}$/,
         age: /^[0-9]+$/,
@@ -238,6 +248,11 @@
         password: /^.{6,}$/,
       };
 
+      const API_URI_REGISTRO = "/api/autenticacion/registro";
+      const roleMap = {
+          '1': 'ADMIN',
+          '2': 'COORDINADOR'
+      };
       function toggleValidation(element, isValid) {
         if (isValid) {
           element.classList.remove('is-invalid');
@@ -262,6 +277,17 @@
         }
       }
 
+      function setFormLoading(isLoading) {
+          btnSubmit.disabled = isLoading;
+          if (isLoading) {
+              buttonText.textContent = 'Creando cuenta...';
+              loader.classList.remove('d-none');
+          } else {
+              buttonText.textContent = 'Crear cuenta';
+              loader.classList.add('d-none');
+          }
+      }
+
       function progressBarMovement(progress, lenght) {
         const longAns = lenght || 0.5;
         progress.style = `width: ${longAns * 16.6666666667}%;`
@@ -278,6 +304,17 @@
           progress.classList.remove("bg-warning")
           progress.classList.add("bg-danger")
         }
+      }
+
+      function displayStatus(message, type) {
+          statusMessageContainer.innerHTML = '';
+          const alertDiv = document.createElement('div');
+          alertDiv.className = `alert alert-${type} alert-dismissible fade show`;
+          alertDiv.setAttribute('role', 'alert');
+          alertDiv.innerHTML = `${message}
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          `;
+          statusMessageContainer.appendChild(alertDiv);
       }
 
       inputName.addEventListener('input', (e) => {
@@ -309,7 +346,7 @@
         userTypeValidity(e, validContent);
       })
 
-      formAccount.addEventListener('submit', (event) => {
+      formAccount.addEventListener('submit', async (event) => {
         event.preventDefault();
         event.stopPropagation();
 
@@ -347,29 +384,71 @@
           return;
         }
 
+        setFormLoading(true);
+        statusMessageContainer.innerHTML = '';
+
         const loginData = {
-          name: inputName.value,
+          nombre: inputName.value,
           email: inputMail.value,
-          age: inputAge.value,
-          type: inputUType.value,
+          edad: inputAge.value,
+          rol: roleMap[ inputUType.value],
           password: inputPassword.value,
         }
+        console.log(JSON.stringify(loginData));
 
-        console.log(loginData)
 
-        inputProperties.forEach(element => {
-          element.value = '';
-          element.classList.remove('is-valid', 'is-invalid');
-        });
-        inputUType.value = '-';
-        inputUType.classList.remove('is-valid', 'is-invalid');
-        progressBarMovement(passwordProgressBar, 0);
-        formAccount.classList.remove('was-validated');
+        try {
+            const response = await fetch(API_URI_REGISTRO, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(loginData),
+            });
 
-        const accModal = new bootstrap.Modal(document.getElementById('accModal'));
-        const bodyModal = document.getElementById("acc-modal-body")
-        bodyModal.textContent = `Bienvenido ${loginData['type'] ? 'Administrador' : 'Coordinador'} ${loginData['name']}!`;
-        accModal.show()
+            if (response.ok) {
+                displayStatus('Cuenta creada exitosamente. Redirigiendo a Iniciar Sesión...', 'success');
+                
+                // Limpiar formulario y redireccionar
+                setTimeout(() => {
+                    window.location.href = '/login';
+                }, 2000); 
+
+            } else {
+                let errorMessage = 'Error desconocido al crear la cuenta.';
+                const errorData = await response.json().catch(() => ({}));
+
+                if (errorData.message) {
+                    errorMessage = errorData.message;
+                } else if (response.status === 409) {
+                    errorMessage = 'El correo electrónico ya se encuentra registrado.';
+                } else if (response.status === 400) {
+                    errorMessage = 'Datos inválidos. Revisa todos los campos.';
+                }
+                
+                displayStatus(`Error de Registro: ${errorMessage}`, 'danger');
+                setFormLoading(false);
+            }
+
+        } catch (error) {
+            console.error("Error de red:", error);
+            displayStatus('Error de conexión con el servidor. Intenta de nuevo.', 'danger');
+            setFormLoading(false);
+        }
+
+        // inputProperties.forEach(element => {
+        //   element.value = '';
+        //   element.classList.remove('is-valid', 'is-invalid');
+        // });
+        // inputUType.value = '-';
+        // inputUType.classList.remove('is-valid', 'is-invalid');
+        // progressBarMovement(passwordProgressBar, 0);
+        // formAccount.classList.remove('was-validated');
+
+        // const accModal = new bootstrap.Modal(document.getElementById('accModal'));
+        // const bodyModal = document.getElementById("acc-modal-body")
+        // bodyModal.textContent = `Bienvenido ${loginData['type'] ? 'Administrador' : 'Coordinador'} ${loginData['name']}!`;
+        // accModal.show()
 
       });
     });
