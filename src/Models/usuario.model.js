@@ -62,4 +62,6 @@ UsuarioSchema.pre('save', async function (next) {
 UsuarioSchema.methods.compararPassword = compareHashedPassword;
 
 
+
+
 export default model('Usuario', UsuarioSchema);

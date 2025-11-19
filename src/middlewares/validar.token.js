@@ -1,7 +1,7 @@
 import { request, response } from "express";
 
 import { Roles } from "../types/roles.js";
-
+import {verificarToken} from '../utils/jwt.generator.js';
 /**
  * Decodifica una cadena Base64 que se espera contenga un objeto JSON y lo convierte a un objeto JavaScript.
  *
@@ -13,20 +13,9 @@ import { Roles } from "../types/roles.js";
  * o `null` si la cadena de entrada es inválida, está vacía, o el parseo JSON falla.
  */
 const tokenParser = (token = "") => {
-  try {
-    // 1. Decodificar la cadena Base64 a un Buffer binario.
-    const tokenBuffer = Buffer.from(token, "base64");
+  const decodedData = verificarToken(token);
 
-    // 2. Convertir el Buffer a una cadena de texto, asumiendo codificación UTF-8 para el JSON.
-    const jsonString = tokenBuffer.toString("utf8");
-
-    console.log(jsonString);
-    // 3. Parsear la cadena de texto como un objeto JSON.
-    return JSON.parse(jsonString);
-  } catch (error) {
-    // Captura errores como: Base64 inválido, JSON mal formado o token vacío.
-    return null;
-  }
+  return decodedData;
 };
 
 /**
@@ -91,7 +80,6 @@ export const validarToken = (req = request, res = response, next) => {
 
   // Inyectar el tipo de usuario validado en los headers de la solicitud para uso posterior
   req.headers["tipo-usuario"] = tipoUsuario;
-
   // Continuar con el siguiente manejador de la ruta
   next();
 };

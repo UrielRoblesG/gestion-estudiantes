@@ -49,14 +49,6 @@ export const crearAlumnoDTO = checkSchema({
       },
     },
   },
-  edad: {
-    notEmpty: {
-      errorMessage: 'La edad es obligatoria' 
-    },
-    isInt: {
-      options: {min: 18, errorMessage: 'El valor de la edad debe ser mayor de 18.'}
-    }
-  },
   email: {
     isEmail: {
       errorMessage: "El email no es un email valido",

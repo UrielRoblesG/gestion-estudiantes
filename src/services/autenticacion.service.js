@@ -1,6 +1,7 @@
 
 import usuarioRepository from "../repositories/usuario.repository.js";
 import {Roles} from '../types/roles.js';
+import { generarJWT } from "../utils/jwt.generator.js";
 
 /**
  * @module AutenticacionService
@@ -60,13 +61,13 @@ class AutenticacionService {
 
       // Simular generación de JWT
       // En la práctica se usaría jsonwebtoken.sign(payload, secret, options)
-      const tokenSimulado = this._simularGeneracionToken(usuario);
+      const token = this._generacionToken(usuario);
 
       // Obtener vista
       const vista = this._obtenerRutaHome(usuario.rol.nombre);
 
       return { 
-        token: tokenSimulado, 
+        token: token, 
         view: vista
       };
     } catch (error) {
@@ -174,7 +175,7 @@ class AutenticacionService {
    * @param {Object} usuarioData - Datos del usuario.
    * @returns {Promise<string[]>} Lista de errores de validación (vacía si no hay errores).
    */
-  _simularGeneracionToken(usuario) {
+  _generacionToken(usuario) {
     const payload = {
       id: usuario.id,
       email: usuario.email,
@@ -182,13 +183,8 @@ class AutenticacionService {
       emitidoEn: new Date().toISOString(),
     };
 
-    // Convertimos el payload a base64 para simular un token
-    const base64Payload = Buffer.from(JSON.stringify(payload)).toString(
-      "base64"
-    );
-    const tokenFalso = `${base64Payload}`;
-
-    return tokenFalso;
+    const token = generarJWT(payload,  '2h');
+    return token;
   }
 
 }

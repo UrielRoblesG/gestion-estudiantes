@@ -83,7 +83,7 @@ const AlumnoSchema = new Schema({
 AlumnoSchema.pre('find', function (next) {
     this.where({isDeleted: false});
     next();
-})
+});
 
 // Middleware para actualizar `updatedAt` en cada save
 AlumnoSchema.pre('save', function (next) {
