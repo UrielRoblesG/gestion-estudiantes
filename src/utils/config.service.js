@@ -7,6 +7,7 @@ class ConfigService {
         this.HOST = process.env.HOST;
         this.DATABASE_URI = process.env.DATABASE_URI;
         this.SECRET = process.env.SECRET;
+        this.PRODUCTIVO = process.env.ENTORNO === 'PROD'
     }
 }
 

@@ -197,8 +197,6 @@
 
     <script>
       // Token (hardcodeado según tu script)
-      const API_TOKEN =
-        "eyJpZCI6IjY5MGJmNzQ3NDdjYzc2ZmU3NzIwZmQ3YSIsImVtYWlsIjoiYWRtaW5AY29ycmVvLmNvbSIsInJvbCI6IkFETUlOIiwiZW1pdGlkb0VuIjoiMjAyNS0xMS0xMVQxNjowMTozNC45NDFaIn0=";
       const API_BASE_URI = "/api/alumnos";
       
       // Referencias del DOM
@@ -277,7 +275,6 @@
             method: "GET",
             headers: {
               "Content-Type": "application/json",
-              Authorization: `Bearer ${API_TOKEN}`,
             },
           });
 
@@ -460,7 +457,6 @@
                   method: "PUT",
                   headers: {
                       "Content-Type": "application/json",
-                      Authorization: `Bearer ${API_TOKEN}`,
                   },
                   body: JSON.stringify(updatedData),
               });

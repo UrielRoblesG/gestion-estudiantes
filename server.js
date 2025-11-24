@@ -15,6 +15,7 @@ import { fileLogger } from "./src/middlewares/file.logger.js";
 import { handleServerErrors } from "./src/middlewares/handle.server.errors.js";
 import configService from "./src/utils/config.service.js";
 import database from './src/config/database.js';
+import cookieParser from "cookie-parser";
 
 import cors from 'cors';
 
@@ -23,7 +24,7 @@ const app = express();
 database.conectar();
 
 // Archivos estaticos
-app.use(express.static('public'));
+app.use(express.static('public')); 
 
 /**
  * Middleware global
@@ -32,6 +33,7 @@ app.use(express.static('public'));
 app.use(express.json());
 app.use(requestLogs);
 app.use(fileLogger);
+app.use(cookieParser());
 
 // Configuracion de CORS
 app.use(cors());

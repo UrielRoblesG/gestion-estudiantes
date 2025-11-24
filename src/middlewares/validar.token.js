@@ -37,19 +37,18 @@ const tokenParser = (token = "") => {
  */
 export const validarToken = (req = request, res = response, next) => {
   // Extraer el encabezado de autorización
-  const { authorization } = req.headers;
+  const token = req.cookies?.token;
 
-  // Manejar token no presente o en formato incorrecto (solo Bearer)
-  if (!authorization || !authorization.startsWith("Bearer ")) {
+  // Manejar token no presente o en formato incorrecto (solo Bearer)  
+  if (!token && req.baseUrl.includes("api")) {
     return res.status(401).json({
       mensaje: "Token de autorización faltante o con formato incorrecto",
       error: "Se esperaba el formato 'Bearer <token>'",
     });
   }
-
-  // Obtener solo la parte del token después de "Bearer "
-  const token = authorization.split(" ")[1];
-
+  else if(!token && !req.baseUrl.includes('api'))
+    return res.redirect('/login');
+  
   // Decodificar el payload del token
   const user = tokenParser(token);
 

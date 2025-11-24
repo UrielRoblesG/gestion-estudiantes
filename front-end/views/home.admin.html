@@ -120,8 +120,6 @@
 
     <script>
       // Token y URI base
-      const API_TOKEN =
-        "eyJpZCI6IjY5MGJmNzQ3NDdjYzc2ZmU3NzIwZmQ3YSIsImVtYWlsIjoiYWRtaW5AY29ycmVvLmNvbSIsInJvbCI6IkFETUlOIiwiZW1pdGlkb0VuIjoiMjAyNS0xMS0xMVQxNjowMTozNC45NDFaIn0=";
       const API_ALUMNOS_URI = "/api/alumnos";
       const alumnosGrid = document.getElementById("alumnos-grid");
       const generalAlert = document.getElementById("msg-alert");
@@ -170,7 +168,6 @@
             method: "GET",
             headers: {
               "Content-Type": "application/json",
-              Authorization: `Bearer ${API_TOKEN}`,
             },
           });
 
@@ -284,7 +281,7 @@
             method: "DELETE",
             headers: {
               "Content-Type": "application/json",
-              Authorization: `Bearer ${API_TOKEN}`,
+              credentials : 'includes'
             },
           });
 
@@ -341,7 +338,6 @@
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    Authorization: `Bearer ${API_TOKEN}`,
                 },
                 body: JSON.stringify(newAlumnoData),
             });

@@ -78,8 +78,7 @@
 
     <script>
       // Token (hardcodeado según tu script)
-      const API_TOKEN =
-        "eyJpZCI6IjY5MGJmNzQ3NDdjYzc2ZmU3NzIwZmQ3YSIsImVtYWlsIjoiYWRtaW5AY29ycmVvLmNvbSIsInJvbCI6IkFETUlOIiwiZW1pdGlkb0VuIjoiMjAyNS0xMS0xMVQxNjowMTozNC45NDFaIn0=";
+      const API_TOKEN = sessionStorage.getItem('token');
 
       /**
        * Obtiene los datos de un alumno por ID.

@@ -96,7 +96,7 @@ document.addEventListener("DOMContentLoaded", () => {
       password: inputPassword.value,
     };
 
-    // Endpoint de la API actualizado según tu script
+    // Endpoint de la API 
     const apiUrl = "/api/autenticacion/login";
 
     try {
@@ -125,7 +125,10 @@ document.addEventListener("DOMContentLoaded", () => {
         );
       }
 
+      // Caso de exito
       const decodedData = await respuesta.json();
+
+      sessionStorage.setItem('token', decodedData.data.token);
 
       // Éxito: Usar la vista proporcionada por el servidor
       displayStatus("¡Acceso exitoso! Redirigiendo...", "success");
