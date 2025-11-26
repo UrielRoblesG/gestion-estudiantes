@@ -1,52 +1,64 @@
-
 import mongoose from 'mongoose';
 import configService from '../utils/config.service.js';
 
-
 const Status = Object.freeze({
-  DESCONECTADO : 'desconectado',
-  CONECTADO : 'conectado',
-  ERROR : 'error'
+  DESCONECTADO: 'desconectado',
+  CONECTADO: 'conectado',
+  ERROR: 'error'
 });
 
 class Database {
   constructor() {
-
-    if (Database.instance != null) {
-      return Database.instance;
-    }
-
-    Database.instance = this;
+    if (Database.instance) return Database.instance;
 
     this.Status = Status.DESCONECTADO;
+    Database.instance = this;
   }
 
   async conectar() {
-    if (this.Status == Status.CONECTADO) 
-      return;
+    if (this.Status === Status.CONECTADO) return;
 
     try {
-      await mongoose.connect(configService.DATABASE_URI, { serverApi: { version: '1', strict: true, deprecationErrors: true } });
-      await mongoose.connection.db.admin().command({ ping: 1 });
-      console.log('Conexion establecida con la BD');
+      await mongoose.connect(configService.DATABASE_URI, {
+        serverApi: {
+          version: '1',
+          strict: true,
+          deprecationErrors: true
+        },
+        connectTimeoutMS: 30000,          // 30s para conectar
+        serverSelectionTimeoutMS: 30000   // 30s para selección de servidor
+      });
+
+      console.log('Conexión establecida con la BD');
       this.Status = Status.CONECTADO;
+
       this.configurarListeners();
+
     } catch (error) {
+      console.error("Error al conectar con MongoDB:", error);
       this.Status = Status.ERROR;
-      process.exit(1);
+      // No hagas exit; Render reintentará automáticamente
     }
   }
 
   configurarListeners() {
     mongoose.connection.on('error', (err) => {
-      console.error('Error de mongoose. ', err);
-      process.exit(1);
+      console.error('Error en Mongoose:', err);
+      // NO process.exit() → evita loops de reinicio en Render
     });
 
-    process.on('SIGINT',  async () => {
+    // Cierre ordenado local
+    process.on('SIGINT', async () => {
       await mongoose.connection.close();
       process.exit(0);
-    })
+    });
+
+    // Cierre ordenado en Render
+    process.on('SIGTERM', async () => {
+      console.log("Render está apagando el servicio...");
+      await mongoose.connection.close();
+      process.exit(0);
+    });
   }
 }
 
