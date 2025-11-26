@@ -34,7 +34,7 @@ export const Rutas = Object.freeze({
      */
     Auth : {
         '/login' : `${rutaRaizProyecto}/front-end/views/login.html`,
-        '/registro' : `${rutaRaizProyecto}/front-end/views/registro.html`
+        '/registro' : `${rutaRaizProyecto}/front-end/views/registro_form_plantilla.html`
     },
     Coordinador : {
         '/coordinador/home' : ``,
@@ -44,5 +44,6 @@ export const Rutas = Object.freeze({
         '/admin/home' : `${rutaRaizProyecto}/front-end/views/home.admin.html`,
         '/admin/coordinador/' : ``,
         '/admin/alumno' : `${rutaRaizProyecto}/front-end/views/alumno.html`,
+        '/admin/editar' : `${rutaRaizProyecto}/front-end/views/editar.alumno.html`,
     },
 });

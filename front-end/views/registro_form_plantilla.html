@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>Gestion estudiantes</title>
+  <!-- Required meta tags -->
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+
+  <!-- Bootstrap CSS v5.2.1 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous" />
+
+  <style>
+    .title {
+      font-size: 28px;
+      color: royalblue;
+      font-weight: 600;
+      letter-spacing: -1px;
+      position: relative;
+      display: flex;
+      align-items: center;
+      padding-left: 30px;
+    }
+
+    .title::before,
+    .title::after {
+      position: absolute;
+      content: "";
+      height: 16px;
+      width: 16px;
+      border-radius: 50%;
+      left: 0px;
+      background-color: royalblue;
+    }
+
+    .title::before {
+      width: 18px;
+      height: 18px;
+      background-color: royalblue;
+    }
+
+    .title::after {
+      width: 18px;
+      height: 18px;
+      animation: pulse 1s linear infinite;
+    }
+
+    input:focus {
+      animation: borderBlink 1.5s infinite;
+      outline: none;
+    }
+
+    @keyframes pulse {
+      from {
+        transform: scale(0.9);
+        opacity: 1;
+      }
+
+      to {
+        transform: scale(1.8);
+        opacity: 0;
+      }
+    }
+
+    @keyframes borderBlink {
+
+      0%,
+      100% {
+        border-color: rgb(84, 84, 239);
+        border-width: 3px;
+      }
+
+      50% {
+        border-color: transparent;
+        border-width: 3px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="container mt-5 align-content-center">
+    <h1 class="text-center mb-4">Gestion Estudiantes</h1>
+
+    <div class="row justify-content-center">
+      <div class="col-12 col-md-6 mx-auto">
+        <p class="title text-center">Crea una cuenta</p>
+        <div class="align-middle">
+          <div id="status-message-container" class="mb-3"></div>
+          <div class="card p-3 shadow-lg " style="width: 100%;">
+            <form id="formRegistro" class="g-3 needs-validation" novalidate>
+              <div class="d-grid gap-2">
+                <div class="row align-items-end">
+                  <div class="col flex-grow-1">
+                    <label for="formRegistro" class="form-label">Nombre</label>
+                    <input type="text" class="form-control" id="nameInput" placeholder="Escribe tu nombre" required>
+                    <div class="invalid-feedback">
+                      Proporciona un nombre que tenga unicamente letras.
+                    </div>
+                    <div class="valid-feedback">
+                      Se ve perfecto!
+                    </div>
+                  </div>
+
+                  <div class="col-3">
+                    <label for="formRegistro" class="form-label">Edad</label>
+                    <input type="number" class="form-control" id="ageInput" placeholder="XX" min="18" max="100"
+                      required>
+                    <div class="invalid-feedback">
+                      Ingresa tu edad.
+                    </div>
+                    <div class="valid-feedback">
+                      Se ve perfecto!
+                    </div>
+                  </div>
+
+                </div>
+
+                <div>
+                  <label for="formRegistro" class="form-label">Correo Electronico</label>
+                  <input type="email" class="form-control" id="mailInput" placeholder="ejemplo@gmail.com" required>
+                  <div class="invalid-feedback">
+                    No parece un correo electronico. Porfavor reescribelo.
+                  </div>
+                  <div class="valid-feedback">
+                    Se ve perfecto!
+                  </div>
+                </div>
+
+                <div>
+                  <label for="formRegistro" class="form-label">Tipo de usuario</label>
+                  <select class="form-select" aria-label="Tipo de usuario" id="userTypeInput" required>
+                    <option value="0" selected>-</option>
+                    <option value="1">Administrador</option>
+                    <option value="2">Coordinador</option>
+                  </select>
+                  <div class="invalid-feedback">
+                    Elije un rol.
+                  </div>
+                  <div class="valid-feedback">
+                  </div>
+                </div>
+
+                <div>
+                  <label for="formRegistro" class="form-label">Contraseña</label>
+                  <input type="password" class="form-control" id="passwordInput" required>
+                  <div class="invalid-feedback">
+                    No es lo suficientemente segura
+                  </div>
+                  <div class="valid-feedback">
+                    Bastante segura!
+                  </div>
+
+                  <div class="progress m-2" role="progressbar" aria-label="Password security" aria-valuenow="100"
+                    aria-valuemin="0" aria-valuemax="100">
+                    <div class="progress-bar progress-bar-striped bg-danger" id="passwordProgressBar"
+                      style="width: 10%"></div>
+                  </div>
+                </div>
+
+                <div>
+                  <label for="formRegistro" class="form-label">Confirma tu contraseña</label>
+                  <input type="password" class="form-control" id="passwordConfirmInput" required>
+                  <div class="invalid-feedback">
+                    Porfavor repite tu contraseña
+                  </div>
+                  <div class="valid-feedback">
+                    Identica!
+                  </div>
+                </div>
+
+                <div class="d-grid">
+                  <button type="submit" id="btnSubmit" class="btn btn-success d-flex align-items-center justify-content-center">
+                    <span id="button-text">Crear cuenta</span>
+                    <div id="loader" class="spinner-border spinner-border-sm ms-2 d-none" role="status">
+                        <span class="visually-hidden">Cargando...</span>
+                    </div>
+                  </button>
+                </div>
+
+              </div>
+            </form>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="d-flex justify-content-start g-1">
+          <p class="text-muted mx-2">Ya tienes una cuenta?</p>
+          <a href="/login" class="text-primary">Inicia sesión</a>
+        </div>
+      </div>
+    </div>
+    </div>
+
+    <!-- Se mantiene el modal, pero su lógica de uso es reemplazada en el script -->
+  <div class="modal fade" id="accModal" tabindex="-1" aria-labelledby="accModalLabel" aria-hidden="true">
+   <div class="modal-dialog">
+    <div class="modal-content">
+     <div class="modal-header">
+      <h1 class="modal-title fs-5" id="accModalLabel">Cuenta creada</h1>
+      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+     </div>
+     <div class="modal-body" id="acc-modal-body"></div>
+     <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+      <button type="button" class="btn btn-primary" id="modal-login-redirect">Ingresar</button>
+     </div>
+    </div>
+   </div>
+</div>
+
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+    integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
+    crossorigin="anonymous"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"
+    integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+"
+    crossorigin="anonymous"></script>
+
+  <script>
+    /**
+     * Aqui escribe el codigo para resolver la tarea
+     */
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const inputName = document.getElementById("nameInput");
+      const inputAge = document.getElementById("ageInput")
+      const inputMail = document.getElementById("mailInput");
+      const inputUType = document.getElementById("userTypeInput");
+      const inputPassword = document.getElementById("passwordInput");
+      const passwordProgressBar = document.getElementById("passwordProgressBar");
+      const inputPasswordConfirm = document.getElementById("passwordConfirmInput");
+      const formAccount = document.getElementById("formRegistro");
+
+      const btnSubmit = document.getElementById("btnSubmit");
+      const buttonText = document.getElementById("button-text");
+      const loader = document.getElementById("loader");
+      const statusMessageContainer = document.getElementById("status-message-container");
+
+      const regexPatterns = {
+        name: /^[a-zA-Z\s]{1,}$/,
+        age: /^[0-9]+$/,
+        email: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+        password: /^.{6,}$/,
+      };
+
+      const API_URI_REGISTRO = "/api/autenticacion/registro";
+      const roleMap = {
+          '1': 'ADMIN',
+          '2': 'COORDINADOR'
+      };
+      function toggleValidation(element, isValid) {
+        if (isValid) {
+          element.classList.remove('is-invalid');
+          element.classList.add('is-valid');
+        } else {
+          element.classList.remove('is-valid');
+          element.classList.add('is-invalid');
+        }
+      }
+
+      function validity(input, regex) {
+        toggleValidation(input, regex.test(input.value));
+      }
+
+      function userTypeValidity(event, content) {
+        const selected = event.target;
+        const valid = (selected.value === '1' || selected.value === '2');
+        toggleValidation(selected, valid);
+
+        if (valid != 0) {
+          content.textContent = selected.value === '1' ? "Hola Administrador!" : "Hola Coordinador!";
+        }
+      }
+
+      function setFormLoading(isLoading) {
+          btnSubmit.disabled = isLoading;
+          if (isLoading) {
+              buttonText.textContent = 'Creando cuenta...';
+              loader.classList.remove('d-none');
+          } else {
+              buttonText.textContent = 'Crear cuenta';
+              loader.classList.add('d-none');
+          }
+      }
+
+      function progressBarMovement(progress, lenght) {
+        const longAns = lenght || 0.5;
+        progress.style = `width: ${longAns * 16.6666666667}%;`
+        if (longAns >= 3 && longAns < 6) {
+          progress.classList.remove("bg-danger")
+          progress.classList.remove("bg-success")
+          progress.classList.add("bg-warning")
+        } else if (longAns >= 6) {
+          progress.classList.remove("bg-warning")
+          progress.classList.remove("bg-danger")
+          progress.classList.add("bg-success")
+        } else {
+          progress.classList.remove("bg-success")
+          progress.classList.remove("bg-warning")
+          progress.classList.add("bg-danger")
+        }
+      }
+
+      function displayStatus(message, type) {
+          statusMessageContainer.innerHTML = '';
+          const alertDiv = document.createElement('div');
+          alertDiv.className = `alert alert-${type} alert-dismissible fade show`;
+          alertDiv.setAttribute('role', 'alert');
+          alertDiv.innerHTML = `${message}
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          `;
+          statusMessageContainer.appendChild(alertDiv);
+      }
+
+      inputName.addEventListener('input', (e) => {
+        validity(e.target, regexPatterns['name'])
+      })
+
+      inputAge.addEventListener('input', (e) => {
+        validity(e.target, regexPatterns['age'])
+        console.log(Number(e.target.value))
+        toggleValidation(e.target, (Number(e.target.value) >= 18 && Number(e.target.value) < 100))
+      })
+
+      inputPassword.addEventListener('input', (e) => {
+        progressBarMovement(passwordProgressBar, e.target.value.length);
+        validity(e.target, regexPatterns['password'])
+      })
+
+      inputMail.addEventListener('input', (e) => {
+        validity(e.target, regexPatterns['email'])
+      })
+
+      inputPasswordConfirm.addEventListener('input', (e) => {
+        const isValid = (inputPassword.value === e.target.value && inputPassword.classList.contains("is-valid"));
+        toggleValidation(inputPasswordConfirm, isValid);
+      });
+
+      inputUType.addEventListener('change', (e) => {
+        const validContent = inputUType.parentElement.querySelector(".valid-feedback");
+        userTypeValidity(e, validContent);
+      })
+
+      formAccount.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+
+        inputProperties = [inputName, inputAge, inputMail, inputPassword, inputPasswordConfirm]
+
+        validity(inputName, regexPatterns['name']);
+
+        validity(inputAge, regexPatterns['age']);
+
+        toggleValidation(inputAge, (Number(inputAge.value) >= 18 && Number(inputAge.value) < 100));
+
+        validity(inputMail, regexPatterns['email']);
+
+        validity(inputPassword, regexPatterns['password']);
+        progressBarMovement(passwordProgressBar, inputPassword.value.length);
+
+        const passwordConfirmValid = (inputPassword.value === inputPasswordConfirm.value && inputPassword.classList.contains("is-valid"));
+        toggleValidation(inputPasswordConfirm, passwordConfirmValid);
+
+        const validContentSubmit = inputUType.parentElement.querySelector(".valid-feedback");
+        const userTypeValue = inputUType.value;
+
+        if (userTypeValue === "0") {
+          toggleValidation(inputUType, false);
+          validContentSubmit.textContent = ""; 
+          formAccount.classList.add('was-validated');
+          formAccount.classList.remove('was-validated');
+          return; 
+        } else {
+          userTypeValidity({ target: inputUType }, validContentSubmit);
+        }
+
+        if (!formAccount.checkValidity()) {
+          formAccount.classList.add('was-validated');
+          return;
+        }
+
+        setFormLoading(true);
+        statusMessageContainer.innerHTML = '';
+
+        const loginData = {
+          nombre: inputName.value,
+          email: inputMail.value,
+          edad: inputAge.value,
+          rol: roleMap[ inputUType.value],
+          password: inputPassword.value,
+        }
+        console.log(JSON.stringify(loginData));
+
+
+        try {
+            const response = await fetch(API_URI_REGISTRO, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(loginData),
+            });
+
+            if (response.ok) {
+                displayStatus('Cuenta creada exitosamente. Redirigiendo a Iniciar Sesión...', 'success');
+                
+                // Limpiar formulario y redireccionar
+                setTimeout(() => {
+                    window.location.href = '/login';
+                }, 2000); 
+
+            } else {
+                let errorMessage = 'Error desconocido al crear la cuenta.';
+                const errorData = await response.json().catch(() => ({}));
+
+                if (errorData.message) {
+                    errorMessage = errorData.message;
+                } else if (response.status === 409) {
+                    errorMessage = 'El correo electrónico ya se encuentra registrado.';
+                } else if (response.status === 400) {
+                    errorMessage = 'Datos inválidos. Revisa todos los campos.';
+                }
+                
+                displayStatus(`Error de Registro: ${errorMessage}`, 'danger');
+                setFormLoading(false);
+            }
+
+        } catch (error) {
+            console.error("Error de red:", error);
+            displayStatus('Error de conexión con el servidor. Intenta de nuevo.', 'danger');
+            setFormLoading(false);
+        }
+
+        // inputProperties.forEach(element => {
+        //   element.value = '';
+        //   element.classList.remove('is-valid', 'is-invalid');
+        // });
+        // inputUType.value = '-';
+        // inputUType.classList.remove('is-valid', 'is-invalid');
+        // progressBarMovement(passwordProgressBar, 0);
+        // formAccount.classList.remove('was-validated');
+
+        // const accModal = new bootstrap.Modal(document.getElementById('accModal'));
+        // const bodyModal = document.getElementById("acc-modal-body")
+        // bodyModal.textContent = `Bienvenido ${loginData['type'] ? 'Administrador' : 'Coordinador'} ${loginData['name']}!`;
+        // accModal.show()
+
+      });
+    });
+  </script>
+</body>
+
+</html>

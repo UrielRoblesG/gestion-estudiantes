@@ -26,6 +26,9 @@
       <div class="row justify-content-center">
         <div class="col-12 col-md-6 mx-auto">
           <p class="title text-center">Inicio de sesión</p>
+
+           <!-- Mensaje de Estado (Éxito/Error) necesario para el script -->
+          <div id="status-message" class="alert d-none" role="alert"></div>
           <form id="formLogin" class="g-3 needs-validation" novalidate>
             <div class="form-floating mb-3">
               <input
@@ -57,15 +60,18 @@
             </div>
 
             <div class="row justify-content-center my-2 g-3">
-              <button type="submit" id="btnLogin" class="btn btn-primary">
-                Ingresar
+              <button type="submit" id="btnLogin" class="btn btn-primary d-flex justify-content-center align-items-center py-2">
+                <span id="button-text">Iniciar sesión</span>
+                <div id="loader" class="spinner-border spinner-border-sm ms-3 d-none" role="status">
+                  <span class="visually-hidden">Cargando...</span>
+                </div>
               </button>
             </div>
           </form>
           <div class="row">
             <div class="d-flex justify-content-end g-1">
               <p class="text-muted mx-2">Aun no tienes una cuenta?</p>
-              <a href="/autenticacion/registro" class="text-primary"
+              <a href="/registro" class="text-primary"
                 >Crea una cuenta</a
               >
             </div>

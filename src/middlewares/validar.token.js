@@ -1,7 +1,7 @@
 import { request, response } from "express";
 
 import { Roles } from "../types/roles.js";
-
+import {verificarToken} from '../utils/jwt.generator.js';
 /**
  * Decodifica una cadena Base64 que se espera contenga un objeto JSON y lo convierte a un objeto JavaScript.
  *
@@ -13,20 +13,9 @@ import { Roles } from "../types/roles.js";
  * o `null` si la cadena de entrada es inválida, está vacía, o el parseo JSON falla.
  */
 const tokenParser = (token = "") => {
-  try {
-    // 1. Decodificar la cadena Base64 a un Buffer binario.
-    const tokenBuffer = Buffer.from(token, "base64");
+  const decodedData = verificarToken(token);
 
-    // 2. Convertir el Buffer a una cadena de texto, asumiendo codificación UTF-8 para el JSON.
-    const jsonString = tokenBuffer.toString("utf8");
-
-    console.log(jsonString);
-    // 3. Parsear la cadena de texto como un objeto JSON.
-    return JSON.parse(jsonString);
-  } catch (error) {
-    // Captura errores como: Base64 inválido, JSON mal formado o token vacío.
-    return null;
-  }
+  return decodedData;
 };
 
 /**
@@ -48,19 +37,18 @@ const tokenParser = (token = "") => {
  */
 export const validarToken = (req = request, res = response, next) => {
   // Extraer el encabezado de autorización
-  const { authorization } = req.headers;
+  const token = req.cookies?.token;
 
-  // Manejar token no presente o en formato incorrecto (solo Bearer)
-  if (!authorization || !authorization.startsWith("Bearer ")) {
+  // Manejar token no presente o en formato incorrecto (solo Bearer)  
+  if (!token && req.baseUrl.includes("api")) {
     return res.status(401).json({
       mensaje: "Token de autorización faltante o con formato incorrecto",
       error: "Se esperaba el formato 'Bearer <token>'",
     });
   }
-
-  // Obtener solo la parte del token después de "Bearer "
-  const token = authorization.split(" ")[1];
-
+  else if(!token && !req.baseUrl.includes('api'))
+    return res.redirect('/login');
+  
   // Decodificar el payload del token
   const user = tokenParser(token);
 
@@ -91,7 +79,6 @@ export const validarToken = (req = request, res = response, next) => {
 
   // Inyectar el tipo de usuario validado en los headers de la solicitud para uso posterior
   req.headers["tipo-usuario"] = tipoUsuario;
-
   // Continuar con el siguiente manejador de la ruta
   next();
 };

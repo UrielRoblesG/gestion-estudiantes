@@ -1,7 +1,7 @@
+
 import usuarioRepository from "../repositories/usuario.repository.js";
-import { Usuario } from "../Models/usuario.js";
-import { EMAIL_REGEX } from "../utils/email.exp.js";
-import { Roles } from "../types/roles.js";
+import {Roles} from '../types/roles.js';
+import { generarJWT } from "../utils/jwt.generator.js";
 
 /**
  * @module AutenticacionService
@@ -43,9 +43,7 @@ class AutenticacionService {
         return { error: "Correo y contraseña son requeridos" };
       }
 
-      const usuario = await usuarioRepository.buscarPorEmail(
-        email.toLowerCase()
-      );
+      const usuario = await usuarioRepository.buscarPorEmail(email.toLowerCase());
 
       if (!usuario) {
         return {
@@ -55,10 +53,7 @@ class AutenticacionService {
 
       // Simular comparación de contraseñas "encriptadas"
       // En la práctica se usaría bcrypt.compare(pass, usuario.password)
-      const contrasenaValida = this._simularComparacionPassword(
-        password,
-        usuario.password
-      );
+      const contrasenaValida = await usuario.compararPassword(password);
 
       if (!contrasenaValida) {
         return { error: "Contraseña incorrecta" };
@@ -66,13 +61,13 @@ class AutenticacionService {
 
       // Simular generación de JWT
       // En la práctica se usaría jsonwebtoken.sign(payload, secret, options)
-      const tokenSimulado = this._simularGeneracionToken(usuario);
+      const token = this._generacionToken(usuario);
 
       // Obtener vista
-      const vista = this._obtenerRutaHome(usuario.rol);
+      const vista = this._obtenerRutaHome(usuario.rol.nombre);
 
       return { 
-        token: tokenSimulado, 
+        token: token, 
         view: vista
       };
     } catch (error) {
@@ -85,16 +80,18 @@ class AutenticacionService {
    *
    * @async
    * @function registrarUsuario
-   * @param {Object} nuevoUsuarioData - Datos del usuario a registrar.
-   * @param {string} nuevoUsuarioData.nombre - Nombre completo del usuario.
-   * @param {string} nuevoUsuarioData.email - Correo electrónico del usuario.
-   * @param {string} nuevoUsuarioData.password - Contraseña del usuario.
+   * @param {Object} nuevoUsuarioDto - Datos del usuario a registrar.
+   * @param {string} nuevoUsuarioDto.nombre - Nombre completo del usuario.
+   * @param {string} nuevoUsuarioDto.email - Correo electrónico del usuario.
+   * @param {string} nuevoUsuarioDto.password - Contraseña del usuario.
+   * @param {string} nuevoUsuarioDto.rol - Rol del usuario.
    *
    * @example
    * const resultado = await autenticacionService.registrarUsuario({
    *   nombre: "Juan Pérez",
    *   email: "juan@example.com",
-   *   password: "123456"
+   *   password: "123456",
+   *   rol: "Admin",
    * });
    *
    * if (resultado.usuario) {
@@ -105,23 +102,36 @@ class AutenticacionService {
    * - **usuario**: Objeto del nuevo usuario si se registró correctamente.
    * - **error**: Mensaje o lista de errores si hubo problemas de validación o registro.
    */
-  async registrarUsuario(nuevoUsuarioData) {
+  async registrarUsuario(nuevoUsuarioDto) {
     try {
-      const errores = await this._validarUsuario(nuevoUsuarioData);
 
-      if (errores.length > 0) {
-        return { error: errores };
+      const {email, password, nombre, rol, edad } = nuevoUsuarioDto;
+
+      const usuarioExiste = await usuarioRepository.buscarPorEmail(email.toLowerCase());
+
+      if (usuarioExiste) {
+        return {error: 'El email ya esta registrado.'};
       }
 
-      const nuevoUsuario = Usuario.fromObject(nuevoUsuarioData);
+      // Buscar el id del rol
+      const rolUsuario =  await usuarioRepository.buscarRolPorNombre(rol.toUpperCase());
 
-      const { error } = await usuarioRepository.agregarUsuario(nuevoUsuario);
-
-      if (error) {
-        return { error };
+      if (!rolUsuario) {
+        return {error: `El rol ${rol} no es un rol valido.`};
       }
 
-      return { usuario: nuevoUsuario };
+
+      const nuevoUsuarioData = {
+        email : email,
+        password : password,
+        nombre : nombre,
+        edad: edad,
+        rol: rolUsuario._id
+      };
+
+      const nuevoUsuario = await usuarioRepository.agregarUsuario(nuevoUsuarioData);
+      
+      return nuevoUsuario;
     } catch (error) {
       return { error };
     }
@@ -165,47 +175,18 @@ class AutenticacionService {
    * @param {Object} usuarioData - Datos del usuario.
    * @returns {Promise<string[]>} Lista de errores de validación (vacía si no hay errores).
    */
-  _simularGeneracionToken(usuario) {
+  _generacionToken(usuario) {
     const payload = {
       id: usuario.id,
       email: usuario.email,
-      rol: usuario.rol || "usuario",
+      rol: usuario.rol.nombre,
       emitidoEn: new Date().toISOString(),
     };
 
-    // Convertimos el payload a base64 para simular un token
-    const base64Payload = Buffer.from(JSON.stringify(payload)).toString(
-      "base64"
-    );
-    const tokenFalso = `${base64Payload}`;
-
-    return tokenFalso;
+    const token = generarJWT(payload,  '2h');
+    return token;
   }
 
-  async _validarUsuario(usuarioData) {
-    let errores = [];
-    // a) Campos obligatorios
-    const camposObligatorios = ["nombre", "email", "password"];
-
-    for (const campo of camposObligatorios) {
-      if (!usuarioData[campo]) {
-        const err = `[Validacion] El campo '${campo}' es obligatorio.`;
-        errores.push(err);
-      }
-    }
-
-    // b) Validar formato de email
-    if (!EMAIL_REGEX.test(usuarioData.email)) {
-      errores.push("[Validacion] El formato del email es inválido.");
-    }
-
-    if (await usuarioRepository.buscarPorEmail(usuarioData.email)) {
-      errores.push(
-        `[Validacion] Ya existe un usuario registrado con el email: ${usuarioData.email}.`
-      );
-    }
-    return errores;
-  }
 }
 
 export default new AutenticacionService();

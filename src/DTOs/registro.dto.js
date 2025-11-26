@@ -4,6 +4,9 @@
 import { checkSchema } from "express-validator";
 import { Roles } from "../types/roles.js";
 
+
+
+
 /**
  * Esquema de validación para la ruta /api/registro.
  * 
@@ -56,6 +59,11 @@ export const registroDTO = checkSchema({
             options: {min: 8, max: 16},
             errorMessage: 'La contraseña no puede ser mayor a 16 ni menor a 8 caracteres'
         }
+    },
+    edad: {
+        notEmpty: {
+            errorMessage: 'La edad es obligatoria'
+        },
     },
     rol : {
         isIn: {

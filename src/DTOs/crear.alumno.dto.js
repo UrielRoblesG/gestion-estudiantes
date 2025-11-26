@@ -1,4 +1,3 @@
-
 import { checkSchema } from "express-validator";
 
 
@@ -21,14 +20,6 @@ import { checkSchema } from "express-validator";
  * - apellidoPaterno:
  *   - Obligatorio, no puede estar vacío ni contener solo espacios.
  *   - Error: "El apellidoPaterno es obligatorio".
- * 
- * - apellidoMaterno:
- *   - Obligatorio, no puede estar vacío ni contener solo espacios.
- *   - Error: "El apellidoMaterno es obligatorio".
- * 
- * - fechaNacimiento:
- *   - Debe tener un formato de fecha válido (YYYY-MM-DD o ISO 8601).
- *   - Error: "La fecha no tiene un formato válido".
  * 
  * - email:
  *   - Debe ser un correo electrónico con formato válido.
@@ -58,25 +49,13 @@ export const crearAlumnoDTO = checkSchema({
       },
     },
   },
-  apellidoMaterno: {
-    notEmpty: {
-      errorMessage: "El apellidoMaterno es obligatorio",
-      options: {
-        ignore_whitespace: true,
-      },
-    },
-  },
-  fechaNacimiento: {
-    isDate: {
-      errorMessage: "La fecha no tiene un formato valido",
-    },
-  },
   email: {
     isEmail: {
       errorMessage: "El email no es un email valido",
     },
   },
   semestre: {
+    default: 1,
     isInt: {
       options: { min: 1, errorMessage: 'El valor del semestre no es valido.', },
     },

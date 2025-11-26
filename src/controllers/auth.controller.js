@@ -2,7 +2,7 @@
 import { request, response } from "express";
 
 import autenticacionService from "../services/autenticacion.service.js";
-
+import configService from "../utils/config.service.js";
 /**
  * @module AuthController
  * @description
@@ -30,6 +30,7 @@ import autenticacionService from "../services/autenticacion.service.js";
  * - **401 Unauthorized**: Error en las credenciales o fallo en la autenticación.
  */
 export const iniciarSesion = async (req = request, res = response) => {
+
     const {token, view, error} = await autenticacionService.intentarLogin(req.body);
 
     if (error) {
@@ -39,10 +40,16 @@ export const iniciarSesion = async (req = request, res = response) => {
         });
     }
 
+    res.cookie('token', token, {
+        httpOnly: true, // Evitar el acceso con JS en el navegador (Obligatorio)
+        secure: configService.PRODUCTIVO, // Usar true en productivo (HTTPS)
+        sameSite: 'strict',
+        maxAge: 60 * 60 * 1000
+    });
+
     res.status(200).json({
         mensaje: 'Autenticación exitosa',
         data: {
-            token: token,
             view : view
         }
     });
@@ -84,3 +91,4 @@ export const registro = async (req = request, res = response) => {
         data: usuario
     });
 }
+

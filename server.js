@@ -13,13 +13,18 @@ import adminViewRoutes from "./src/routes/admin.view.route.js";
 import { requestLogs } from "./src/middlewares/request.logs.js";
 import { fileLogger } from "./src/middlewares/file.logger.js";
 import { handleServerErrors } from "./src/middlewares/handle.server.errors.js";
+import configService from "./src/utils/config.service.js";
+import database from './src/config/database.js';
+import cookieParser from "cookie-parser";
+
 import cors from 'cors';
 
 const app = express();
 
+database.conectar();
 
 // Archivos estaticos
-app.use(express.static('public'));
+app.use(express.static('public')); 
 
 /**
  * Middleware global
@@ -28,6 +33,7 @@ app.use(express.static('public'));
 app.use(express.json());
 app.use(requestLogs);
 app.use(fileLogger);
+app.use(cookieParser());
 
 // Configuracion de CORS
 app.use(cors());
@@ -64,13 +70,14 @@ app.use('/api/autenticacion', autenticacionRoute);
 
 //* Rutas de las vistas
 app.use(authViewRoutes);
+
 app.use('/admin',adminViewRoutes);
 // Aqui van los middlewares de manejo de errores
 app.use(handleServerErrors);
 
 // Configuración del servidor - Mas tardes utilizaremos variables de entorno
-const host = "127.0.0.1";
-const port = 3000;
+const host = configService.HOST;
+const port = configService.PORT;
 
 /**
  * Inicia el servidor en el host y puerto definidos.
