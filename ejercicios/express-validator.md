@@ -62,13 +62,13 @@ Crea `middlewares/validarRegistro.js`:
 
 ```js
 import express from 'express';
-import { registroSchema } from '../middlewares/validarRegistro.js';
+import { registroDTO } from '../middlewares/validarRegistro.js';
 import { validationResult } from 'express-validator';
 import { validarRoles } from '../middlewares/validarRoles.js';
 
 const router = express.Router();
 
-router.post('/api/registro', registroSchema, (req, res) => {
+router.post('/api/registro', registroDTO, (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.array() });
