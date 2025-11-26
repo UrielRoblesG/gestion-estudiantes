@@ -84,5 +84,5 @@ const port = configService.PORT;
  * Muestra en consola la URL de acceso local al iniciar correctamente.
  */
 app.listen(port,() => {
-  console.log(`Servidor a la escucha en http://${host}:${port}/`);
+  console.log(`Servidor a la escucha en el puerto ${port}/`);
 });
