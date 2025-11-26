@@ -49,8 +49,11 @@ app.use(cors());
  */
 
 app.get('/', (req, res) => {
+  if (req.cookies.token) {
+    res.redirect('/admin/home');
+  }
   res.redirect('/login');
-})
+});
 
 
 app.use("/api/alumnos", alumnoRoute);
