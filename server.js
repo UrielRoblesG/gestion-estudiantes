@@ -47,6 +47,12 @@ app.use(cors());
  *  - GET  http://127.0.0.1:3000/api/alumnos/
  *  - GET  http://127.0.0.1:3000/api/alumnos/:id
  */
+
+app.get('/', (req, res) => {
+  res.redirect('/login');
+})
+
+
 app.use("/api/alumnos", alumnoRoute);
 
 /**
