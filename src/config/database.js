@@ -26,7 +26,8 @@ class Database {
       return;
 
     try {
-      await mongoose.connect(configService.DATABASE_URI);
+      await mongoose.connect(configService.DATABASE_URI, { serverApi: { version: '1', strict: true, deprecationErrors: true } });
+      await mongoose.connection.db.admin().command({ ping: 1 });
       console.log('Conexion establecida con la BD');
       this.Status = Status.CONECTADO;
       this.configurarListeners();
