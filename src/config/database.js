@@ -44,7 +44,6 @@ class Database {
   configurarListeners() {
     mongoose.connection.on('error', (err) => {
       console.error('Error en Mongoose:', err);
-      // NO process.exit() → evita loops de reinicio en Render
     });
 
     // Cierre ordenado local
